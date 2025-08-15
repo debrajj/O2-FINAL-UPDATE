@@ -1,0 +1,106 @@
+npm warn config ignoring workspace config at /Users/debrajroy/Desktop/o2-project/backend/.npmrc
+
+> dev
+> cross-env NODE_OPTIONS=--no-deprecation next dev
+
+   ▲ Next.js 15.3.2
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.19.36:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3.6s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 744ms (108 modules)
+ ○ Compiling /api/[...slug] ...
+ ✓ Compiled /api/[...slug] in 8.1s (1140 modules)
+ ○ Compiling /admin/[[...segments]] ...
+[11:26:48] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 14778ms
+ ✓ Compiled /admin/[[...segments]] in 10.1s (3190 modules)
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 2045ms
+ GET /admin 307 in 14201ms
+ GET /admin/login 200 in 166ms
+ GET /api/users/me 200 in 18ms
+ POST /api/users/login 200 in 347ms
+ GET /admin 200 in 217ms
+ GET /admin/collections/hero-banner 200 in 346ms
+ GET /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 294ms
+ POST /api/media 200 in 192ms
+ POST /api/media 200 in 199ms
+ GET /api/payload-preferences/collection-hero-banner 200 in 199ms
+[11:27:42] [31mERROR[39m: [36mFile WhatsApp Image 2025-08-12 at 5.51.57 PM.jpg for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/WhatsApp Image 2025-08-12 at 5.51.57 PM.jpg[39m
+ GET /api/media/file/WhatsApp%20Image%202025-08-12%20at%205.51.57%20PM.jpg 500 in 104ms
+[11:27:42] [31mERROR[39m: [36mFile WhatsApp Image 2025-08-12 at 4.15.11 PM.jpg for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/WhatsApp Image 2025-08-12 at 4.15.11 PM.jpg[39m
+ GET /api/media/file/WhatsApp%20Image%202025-08-12%20at%204.15.11%20PM.jpg 500 in 110ms
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 100ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 327ms
+[11:27:53] [31mERROR[39m: [36mFile WhatsApp Image 2025-08-12 at 5.51.57 PM.jpg for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/WhatsApp Image 2025-08-12 at 5.51.57 PM.jpg[39m
+ GET /api/media/file/WhatsApp%20Image%202025-08-12%20at%205.51.57%20PM.jpg 500 in 98ms
+ GET /api/payload-preferences/collection-media 200 in 247ms
+[11:27:55] [31mERROR[39m: [36mFile WhatsApp Image 2025-08-12 at 5.51.57 PM.jpg for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/WhatsApp Image 2025-08-12 at 5.51.57 PM.jpg[39m
+ GET /api/media/file/WhatsApp%20Image%202025-08-12%20at%205.51.57%20PM.jpg?2025-08-12T12%3A29%3A20.704Z 500 in 89ms
+ GET /api/payload-preferences/collection-media-689b272b6add3acde578c8f7 200 in 149ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 325ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 315ms
+[11:28:11] [31mERROR[39m: [36mFile WhatsApp Image 2025-08-12 at 5.51.57 PM.jpg for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/WhatsApp Image 2025-08-12 at 5.51.57 PM.jpg[39m
+ GET /api/media/file/WhatsApp%20Image%202025-08-12%20at%205.51.57%20PM.jpg 500 in 87ms
+ PATCH /api/media/689b272b6add3acde578c8f7?depth=0&fallback-locale=null 200 in 741ms
+ POST /api/media/access/689b272b6add3acde578c8f7? 200 in 121ms
+ POST /api/media 200 in 184ms
+ POST /api/media/access/689b272b6add3acde578c8f7? 200 in 112ms
+ GET /api/media/file/1%20Desktop%20Banner%20(1)-1.png 200 in 156ms
+ GET /api/media/file/1%20Desktop%20Banner%20(1)-1.png?2025-08-13T05%3A58%3A12.017Z 200 in 139ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 405ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 109ms
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 83ms
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 87ms
+ GET /api/payload-preferences/collection-hero-banner-689b1bcc93442e98a1ce2304 200 in 166ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 302ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 607ms
+[11:28:28] [31mERROR[39m: [36mFile 1 Desktop Banner (1).png for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/1 Desktop Banner (1).png[39m
+ GET /api/media/file/1%20Desktop%20Banner%20(1).png 500 in 100ms
+[11:28:28] [31mERROR[39m: [36mFile Screenshot 2025-08-01 at 6.03.54 PM.png for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/Screenshot 2025-08-01 at 6.03.54 PM.png[39m
+ GET /api/media/file/Screenshot%202025-08-01%20at%206.03.54%20PM.png 500 in 111ms
+ GET /api/media/file/demo.png 500 in 114ms
+ GET /api/media/file/WhatsApp%20Image%202025-08-12%20at%204.15.11%20PM.jpg 500 in 122ms
+[11:28:28] [31mERROR[39m: [36mFile demo.png for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/demo.png[39m
+[11:28:28] [31mERROR[39m: [36mFile WhatsApp Image 2025-08-12 at 4.15.11 PM.jpg for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/WhatsApp Image 2025-08-12 at 4.15.11 PM.jpg[39m
+ GET /api/media/file/Screenshot%202025-08-11%20at%2012.01.31%20PM-1.png 500 in 130ms
+[11:28:28] [31mERROR[39m: [36mFile Screenshot 2025-08-11 at 12.01.31 PM-1.png for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/Screenshot 2025-08-11 at 12.01.31 PM-1.png[39m
+[11:28:29] [31mERROR[39m: [36mFile photo-1571019613454-1cb2f99b2d8bw=400&h=400&fit=crop.jpg for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/photo-1571019613454-1cb2f99b2d8bw=400&h=400&fit=crop.jpg[39m
+ GET /api/media/file/photo-1571019613454-1cb2f99b2d8bw%3D400%26h%3D400%26fit%3Dcrop.jpg 500 in 99ms
+ GET /api/media/file/Screenshot%202025-08-11%20at%2011.54.39%20AM.png 500 in 103ms
+[11:28:29] [31mERROR[39m: [36mFile Screenshot 2025-08-11 at 11.54.39 AM.png for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/Screenshot 2025-08-11 at 11.54.39 AM.png[39m
+[11:28:29] [31mERROR[39m: [36mFile photo-1544367567-0f2fcb009e0bw=400&h=400&fit=crop-1.jpg for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/photo-1544367567-0f2fcb009e0bw=400&h=400&fit=crop-1.jpg[39m
+ GET /api/media/file/photo-1544367567-0f2fcb009e0bw%3D400%26h%3D400%26fit%3Dcrop-1.jpg 500 in 115ms
+ GET /api/media/file/Screenshot%202025-08-11%20at%2012.01.31%20PM.png 500 in 128ms
+[11:28:29] [31mERROR[39m: [36mFile Screenshot 2025-08-11 at 12.01.31 PM.png for collection media is missing on the disk. Expected path: /Users/debrajroy/Desktop/o2-project/backend/media/Screenshot 2025-08-11 at 12.01.31 PM.png[39m
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 511ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 161ms
+ GET /api/payload-preferences/undefined 200 in 154ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 87ms
+[11:28:45] [32mINFO[39m: [36mThe following field is invalid: Alt[39m
+ POST /api/media?depth=0&fallback-locale=null 400 in 316ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 89ms
+ POST /api/media?depth=0&fallback-locale=null 201 in 387ms
+ GET /api/media/file/WhatsApp%20Image%202025-08-12%20at%204.15.11%20PM-1.jpg 200 in 111ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 364ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 310ms
+ PATCH /api/hero-banner/689b1bcc93442e98a1ce2304?depth=0&fallback-locale=null 200 in 469ms
+ POST /api/hero-banner/access/689b1bcc93442e98a1ce2304? 200 in 78ms
+ POST /api/hero-banner/access/689b1bcc93442e98a1ce2304? 200 in 77ms
+ POST /admin/collections/hero-banner/689b1bcc93442e98a1ce2304 200 in 82ms
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 82ms
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 101ms
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 92ms
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 72ms
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 106ms
+ GET /api/announcements?where[isActive][equals]=true&sort=-priority&limit=1 200 in 86ms
+ GET /api/products 200 in 179ms
+ GET /api/hero-banners 404 in 14ms
+ GET /api/banners 404 in 8ms
+ GET /api/hero-banner 200 in 173ms
+ GET /api/hero-banner?where[isActive][equals]=true&depth=2 200 in 215ms
+ GET /api/products?limit=100 200 in 279ms
+[?25h

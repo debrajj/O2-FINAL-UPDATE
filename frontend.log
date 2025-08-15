@@ -1,0 +1,17 @@
+
+> vite_react_shadcn_ts@0.0.0 dev
+> vite
+
+
+  VITE v5.4.10  ready in 303 ms
+
+  ➜  Local:   http://localhost:8080/
+  ➜  Network: http://192.168.19.36:8080/
+11:39:58 AM [vite] hmr update /src/pages/Index.tsx, /src/index.css
+11:42:24 AM [vite] hmr update /src/pages/Cart.tsx, /src/index.css
+11:42:50 AM [vite] hmr update /src/pages/Cart.tsx, /src/index.css
+11:43:58 AM [vite] hmr update /src/pages/Cart.tsx, /src/index.css
+11:44:41 AM [vite] hmr update /src/components/BuyItWith.tsx, /src/index.css
+11:45:23 AM [vite] hmr update /src/components/BuyItWith.tsx, /src/index.css
+11:46:22 AM [vite] hmr update /src/components/CartSidebarUpsells.tsx, /src/index.css
+11:46:54 AM [vite] hmr update /src/pages/Cart.tsx, /src/index.css
