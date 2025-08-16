@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getPayload } from 'payload'
+import config from '../../../payload.config'
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,40 +11,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User ID required' }, { status: 400 })
     }
 
-    const productNames = [
-      'Whey Protein Isolate',
-      'BCAA Powder', 
-      'Creatine Monohydrate',
-      'Pre-Workout Booster',
-      'Mass Gainer',
-      'Glutamine Powder',
-      'Fish Oil Capsules',
-      'Multivitamin Tablets'
-    ];
+    const payload = await getPayload({ config })
 
-    const orders = Array.from({ length: 50 }, (_, i) => ({
-      id: (i + 1).toString(),
-      orderNumber: `ORD-2024-${String(i + 1).padStart(3, '0')}`,
-      userId,
-      customerEmail: `customer${i + 1}@example.com`,
-      customerName: `Customer ${i + 1}`,
-      status: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'][Math.floor(Math.random() * 5)],
-      items: [{
-        id: (i + 1).toString(),
-        name: productNames[Math.floor(Math.random() * productNames.length)],
-        price: Math.floor(Math.random() * 3000) + 1000,
-        quantity: Math.floor(Math.random() * 3) + 1,
-        variant: ['1kg', '2kg', '5kg'][Math.floor(Math.random() * 3)]
-      }],
-      total: Math.floor(Math.random() * 5000) + 1500,
-      paymentMethod: ['upi', 'credit_card', 'debit_card', 'cod', 'net_banking'][Math.floor(Math.random() * 5)],
-      paymentStatus: ['paid', 'pending', 'failed'][Math.floor(Math.random() * 3)],
-      trackingNumber: `TRK${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-    }))
+    // Fetch orders from Payload CMS
+    const result = await payload.find({
+      collection: 'orders',
+      where: {
+        userId: {
+          equals: userId,
+        },
+      },
+      sort: '-createdAt',
+      limit: 100,
+    })
 
-    return NextResponse.json({ success: true, orders })
+    return NextResponse.json({ success: true, orders: result.docs })
   } catch (error) {
+    console.error('Error fetching orders:', error)
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 })
   }
 }
@@ -50,33 +35,79 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
-    
-    const productNames = [
-      'Whey Protein Isolate',
-      'BCAA Powder', 
-      'Creatine Monohydrate',
-      'Pre-Workout Booster',
-      'Mass Gainer'
-    ];
 
-    const order = {
-      id: Date.now().toString(),
-      orderNumber: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
-      ...data,
-      items: data.items?.map((item: any) => ({
-        ...item,
-        name: item.name || productNames[Math.floor(Math.random() * productNames.length)]
-      })) || [{
-        id: Date.now().toString(),
-        name: productNames[Math.floor(Math.random() * productNames.length)],
-        price: Math.floor(Math.random() * 2000) + 1000,
-        quantity: 1
-      }],
-      createdAt: new Date().toISOString(),
+    const payload = await getPayload({ config })
+
+    // Transform frontend data to match Payload schema
+    const orderData = {
+      userId: data.userId,
+      customerEmail: data.customerEmail,
+      customerName: {
+        firstName: data.shippingAddress?.firstName || data.customerName?.firstName || '',
+        lastName: data.shippingAddress?.lastName || data.customerName?.lastName || '',
+      },
+      status: 'pending',
+      items:
+        data.items?.map((item: any) => ({
+          productId: item.id,
+          name: item.name,
+          image: item.image,
+          price: item.price,
+          quantity: item.quantity,
+          variant: item.variant,
+          weight: item.weight,
+          isUpsell: item.isUpsell || false,
+          upsellDiscount: item.upsellDiscount || 0,
+          originalPrice: item.originalPrice || item.price,
+        })) || [],
+      pricing: {
+        subtotal: data.subtotal || data.total,
+        discountAmount: data.discountAmount || 0,
+        shippingCost: data.shippingCost || 0,
+        taxAmount: data.taxAmount || 0,
+        total: data.total,
+      },
+      shippingAddress: {
+        firstName: data.shippingAddress?.firstName || '',
+        lastName: data.shippingAddress?.lastName || '',
+        address: data.shippingAddress?.address || '',
+        apartment: data.shippingAddress?.apartment || '',
+        city: data.shippingAddress?.city || '',
+        state: data.shippingAddress?.state || '',
+        zipCode: data.shippingAddress?.zipCode || '',
+        phone: data.shippingAddress?.phone || '',
+        country: 'India',
+      },
+      delivery: {
+        method: data.deliveryMethod || 'standard',
+        estimatedDelivery: data.estimatedDelivery,
+        trackingNumber: data.trackingNumber,
+        carrier: data.carrier,
+      },
+      payment: {
+        method: data.paymentMethod?.toLowerCase() || 'cod',
+        status: 'pending',
+        transactionId: data.transactionId,
+      },
+      coupons: data.coupons || [],
+      notes: data.notes || '',
+      metadata: {
+        source: 'website',
+        userAgent: request.headers.get('user-agent') || '',
+        ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '',
+        referrer: request.headers.get('referer') || '',
+      },
     }
+
+    // Create order in Payload CMS
+    const order = await payload.create({
+      collection: 'orders',
+      data: orderData,
+    })
 
     return NextResponse.json({ success: true, order })
   } catch (error) {
+    console.error('Error creating order:', error)
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
   }
 }

@@ -15,7 +15,7 @@ import { Brands } from './collections/brands'
 import { Announcements } from './collections/announcements'
 import { HeroBanner } from './collections/hero-banner'
 import { Coupons } from './collections/coupons'
-
+import { Orders } from './collections/orders'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -27,7 +27,17 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Products, Category, Brands, Announcements, HeroBanner, Coupons],
+  collections: [
+    Users,
+    Media,
+    Products,
+    Category,
+    Brands,
+    Announcements,
+    HeroBanner,
+    Coupons,
+    Orders,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -36,10 +46,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || 'mongodb://localhost:27017/o2_nutrition',
   }),
-  cors: [
-    'http://localhost:8081',
-    '*'
-  ],
+  cors: ['http://localhost:8081', '*'],
   sharp,
   plugins: [
     payloadCloudPlugin(),

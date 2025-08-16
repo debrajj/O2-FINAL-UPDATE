@@ -75,6 +75,7 @@ export interface Config {
     announcements: Announcement;
     'hero-banner': HeroBanner;
     coupons: Coupon;
+    orders: Order;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -89,6 +90,7 @@ export interface Config {
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     'hero-banner': HeroBannerSelect<false> | HeroBannerSelect<true>;
     coupons: CouponsSelect<false> | CouponsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -700,6 +702,231 @@ export interface Coupon {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: string;
+  /**
+   * Unique order number (e.g., ORD-2024-001)
+   */
+  orderNumber: string;
+  /**
+   * User ID from frontend
+   */
+  userId: string;
+  /**
+   * Customer email address
+   */
+  customerEmail: string;
+  /**
+   * Customer name information
+   */
+  customerName: {
+    firstName: string;
+    lastName: string;
+  };
+  /**
+   * Current order status
+   */
+  status:
+    | 'pending'
+    | 'confirmed'
+    | 'processing'
+    | 'shipped'
+    | 'in_transit'
+    | 'out_for_delivery'
+    | 'delivered'
+    | 'cancelled'
+    | 'returned'
+    | 'refunded';
+  /**
+   * Order items
+   */
+  items: {
+    /**
+     * Product ID
+     */
+    productId: string;
+    /**
+     * Product name
+     */
+    name: string;
+    /**
+     * Product image URL
+     */
+    image?: string | null;
+    /**
+     * Unit price
+     */
+    price: number;
+    /**
+     * Quantity ordered
+     */
+    quantity: number;
+    /**
+     * Product variant (flavor, size, etc.)
+     */
+    variant?: string | null;
+    /**
+     * Product weight/size
+     */
+    weight?: string | null;
+    /**
+     * Is this an upsell item?
+     */
+    isUpsell?: boolean | null;
+    /**
+     * Upsell discount percentage
+     */
+    upsellDiscount?: number | null;
+    /**
+     * Original price before discount
+     */
+    originalPrice?: number | null;
+    id?: string | null;
+  }[];
+  /**
+   * Order pricing breakdown
+   */
+  pricing: {
+    /**
+     * Subtotal before discounts and shipping
+     */
+    subtotal: number;
+    /**
+     * Total discount amount
+     */
+    discountAmount?: number | null;
+    /**
+     * Shipping cost
+     */
+    shippingCost: number;
+    /**
+     * Tax amount
+     */
+    taxAmount?: number | null;
+    /**
+     * Final total amount
+     */
+    total: number;
+  };
+  /**
+   * Shipping address information
+   */
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    address: string;
+    apartment?: string | null;
+    city: string;
+    state: string;
+    zipCode: string;
+    phone: string;
+    country?: string | null;
+  };
+  /**
+   * Delivery information
+   */
+  delivery: {
+    method: 'standard' | 'express' | 'overnight';
+    /**
+     * Estimated delivery date
+     */
+    estimatedDelivery?: string | null;
+    /**
+     * Actual delivery date
+     */
+    actualDelivery?: string | null;
+    /**
+     * Shipping tracking number
+     */
+    trackingNumber?: string | null;
+    /**
+     * Shipping carrier (e.g., FedEx, DHL)
+     */
+    carrier?: string | null;
+  };
+  /**
+   * Payment information
+   */
+  payment: {
+    method: 'credit_card' | 'debit_card' | 'upi' | 'net_banking' | 'cod' | 'wallet';
+    status: 'pending' | 'paid' | 'failed' | 'refunded' | 'partially_refunded';
+    /**
+     * Payment gateway transaction ID
+     */
+    transactionId?: string | null;
+    /**
+     * Payment completion date
+     */
+    paidAt?: string | null;
+  };
+  /**
+   * Applied coupons and discounts
+   */
+  coupons?:
+    | {
+        code: string;
+        title?: string | null;
+        discountType?: ('percentage' | 'fixed' | 'free_shipping') | null;
+        discountValue?: number | null;
+        discountAmount?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Order notes or special instructions
+   */
+  notes?: string | null;
+  /**
+   * Order status timeline
+   */
+  timeline?:
+    | {
+        status:
+          | 'order_placed'
+          | 'order_confirmed'
+          | 'processing'
+          | 'shipped'
+          | 'in_transit'
+          | 'out_for_delivery'
+          | 'delivered'
+          | 'cancelled'
+          | 'returned'
+          | 'refunded';
+        title: string;
+        description?: string | null;
+        timestamp: string;
+        /**
+         * Location where status change occurred
+         */
+        location?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Additional order metadata
+   */
+  metadata?: {
+    source?: ('website' | 'mobile_app' | 'phone' | 'whatsapp') | null;
+    /**
+     * User agent string
+     */
+    userAgent?: string | null;
+    /**
+     * Customer IP address
+     */
+    ipAddress?: string | null;
+    /**
+     * Referrer URL
+     */
+    referrer?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -736,6 +963,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'coupons';
         value: string | Coupon;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: string | Order;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1010,6 +1241,107 @@ export interface CouponsSelect<T extends boolean = true> {
   excludedProducts?: T;
   firstTimeUserOnly?: T;
   showOnCart?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  orderNumber?: T;
+  userId?: T;
+  customerEmail?: T;
+  customerName?:
+    | T
+    | {
+        firstName?: T;
+        lastName?: T;
+      };
+  status?: T;
+  items?:
+    | T
+    | {
+        productId?: T;
+        name?: T;
+        image?: T;
+        price?: T;
+        quantity?: T;
+        variant?: T;
+        weight?: T;
+        isUpsell?: T;
+        upsellDiscount?: T;
+        originalPrice?: T;
+        id?: T;
+      };
+  pricing?:
+    | T
+    | {
+        subtotal?: T;
+        discountAmount?: T;
+        shippingCost?: T;
+        taxAmount?: T;
+        total?: T;
+      };
+  shippingAddress?:
+    | T
+    | {
+        firstName?: T;
+        lastName?: T;
+        address?: T;
+        apartment?: T;
+        city?: T;
+        state?: T;
+        zipCode?: T;
+        phone?: T;
+        country?: T;
+      };
+  delivery?:
+    | T
+    | {
+        method?: T;
+        estimatedDelivery?: T;
+        actualDelivery?: T;
+        trackingNumber?: T;
+        carrier?: T;
+      };
+  payment?:
+    | T
+    | {
+        method?: T;
+        status?: T;
+        transactionId?: T;
+        paidAt?: T;
+      };
+  coupons?:
+    | T
+    | {
+        code?: T;
+        title?: T;
+        discountType?: T;
+        discountValue?: T;
+        discountAmount?: T;
+        id?: T;
+      };
+  notes?: T;
+  timeline?:
+    | T
+    | {
+        status?: T;
+        title?: T;
+        description?: T;
+        timestamp?: T;
+        location?: T;
+        id?: T;
+      };
+  metadata?:
+    | T
+    | {
+        source?: T;
+        userAgent?: T;
+        ipAddress?: T;
+        referrer?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
