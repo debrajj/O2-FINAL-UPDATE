@@ -63,23 +63,29 @@ const Checkout: React.FC = () => {
 
     try {
       const orderNumber = Math.random().toString(36).substr(2, 9).toUpperCase();
-      
+
       // Create order data
       const orderData = {
-        orderNumber,
-        items: state.items.map(item => ({
+        userId: "temp-user-id", // This should come from auth context
+        customerEmail: formData.email,
+        items: state.items.map((item) => ({
           id: item.id.toString(),
           name: item.name,
           image: item.image,
           price: item.price,
           quantity: item.quantity,
-          variant: item.variant || item.weight || undefined
+          variant: item.variant || item.weight || undefined,
+          isUpsell: item.isUpsell || false,
+          upsellDiscount: item.upsellDiscount || 0,
+          originalPrice: item.originalPrice || item.price,
         })),
+        subtotal: state.total,
         total: finalTotalINR,
+        shippingCost: shippingCostINR,
+        discountAmount: 0, // Will be calculated based on applied coupons
+        deliveryMethod: deliveryMethod,
         paymentMethod: paymentMethod.toUpperCase(),
         shippingAddress: {
-          id: '1',
-          type: 'home' as const,
           firstName: formData.firstName,
           lastName: formData.lastName,
           address: formData.address,
@@ -88,13 +94,12 @@ const Checkout: React.FC = () => {
           state: formData.state,
           zipCode: formData.zipCode,
           phone: formData.phone,
-          isDefault: true
-        }
+        },
       };
 
       // Create order
       const success = await createOrder(orderData);
-      
+
       if (success) {
         toast({
           title: "Order Placed Successfully!",
@@ -103,24 +108,26 @@ const Checkout: React.FC = () => {
 
         // Clear cart and redirect
         clearCart();
-        const isGiftCardPurchase = sessionStorage.getItem('isGiftCardPurchase') === 'true';
-        sessionStorage.removeItem('isGiftCardPurchase');
-        
-        navigate(`/thank-you${isGiftCardPurchase ? '?giftcard=true' : ''}`, {
+        const isGiftCardPurchase =
+          sessionStorage.getItem("isGiftCardPurchase") === "true";
+        sessionStorage.removeItem("isGiftCardPurchase");
+
+        navigate(`/thank-you${isGiftCardPurchase ? "?giftcard=true" : ""}`, {
           state: {
             orderTotal: finalTotalINR,
             orderNumber,
           },
         });
       } else {
-        throw new Error('Failed to create order');
+        throw new Error("Failed to create order");
       }
     } catch (error) {
-      console.error('Order creation failed:', error);
+      console.error("Order creation failed:", error);
       toast({
         title: "Order Failed",
-        description: "There was an error processing your order. Please try again.",
-        variant: "destructive"
+        description:
+          "There was an error processing your order. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
@@ -724,8 +731,8 @@ const Checkout: React.FC = () => {
                             Cash on Delivery
                           </h4>
                           <p className="text-sm text-yellow-700 mt-1">
-                            Pay ₹{finalTotalINR.toLocaleString()} when your order is
-                            delivered. Please keep exact change ready.
+                            Pay ₹{finalTotalINR.toLocaleString()} when your
+                            order is delivered. Please keep exact change ready.
                           </p>
                         </div>
                       </div>
@@ -791,7 +798,9 @@ const Checkout: React.FC = () => {
                   <span className="text-gray-600">
                     Subtotal ({state.itemCount} items)
                   </span>
-                  <span className="font-medium">₹{subtotalINR.toLocaleString()}</span>
+                  <span className="font-medium">
+                    ₹{subtotalINR.toLocaleString()}
+                  </span>
                 </div>
 
                 <div className="flex justify-between">
