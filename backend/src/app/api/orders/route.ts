@@ -1,82 +1,70 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID required' }, { status: 400 })
-    }
-
-    const productNames = [
-      'Whey Protein Isolate',
-      'BCAA Powder', 
-      'Creatine Monohydrate',
-      'Pre-Workout Booster',
-      'Mass Gainer',
-      'Glutamine Powder',
-      'Fish Oil Capsules',
-      'Multivitamin Tablets'
-    ];
-
-    const orders = Array.from({ length: 50 }, (_, i) => ({
-      id: (i + 1).toString(),
-      orderNumber: `ORD-2024-${String(i + 1).padStart(3, '0')}`,
-      userId,
-      customerEmail: `customer${i + 1}@example.com`,
-      customerName: `Customer ${i + 1}`,
-      status: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'][Math.floor(Math.random() * 5)],
-      items: [{
-        id: (i + 1).toString(),
-        name: productNames[Math.floor(Math.random() * productNames.length)],
-        price: Math.floor(Math.random() * 3000) + 1000,
-        quantity: Math.floor(Math.random() * 3) + 1,
-        variant: ['1kg', '2kg', '5kg'][Math.floor(Math.random() * 3)]
-      }],
-      total: Math.floor(Math.random() * 5000) + 1500,
-      paymentMethod: ['upi', 'credit_card', 'debit_card', 'cod', 'net_banking'][Math.floor(Math.random() * 5)],
-      paymentStatus: ['paid', 'pending', 'failed'][Math.floor(Math.random() * 3)],
-      trackingNumber: `TRK${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-    }))
-
-    return NextResponse.json({ success: true, orders })
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 })
-  }
-}
+import { getPayload } from 'payload'
+import config from '../../../payload.config'
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json()
+    const payload = await getPayload({ config })
+    const body = await request.json()
     
-    const productNames = [
-      'Whey Protein Isolate',
-      'BCAA Powder', 
-      'Creatine Monohydrate',
-      'Pre-Workout Booster',
-      'Mass Gainer'
-    ];
+    console.log('Creating order with data:', body)
 
-    const order = {
-      id: Date.now().toString(),
-      orderNumber: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
-      ...data,
-      items: data.items?.map((item: any) => ({
-        ...item,
-        name: item.name || productNames[Math.floor(Math.random() * productNames.length)]
-      })) || [{
-        id: Date.now().toString(),
-        name: productNames[Math.floor(Math.random() * productNames.length)],
-        price: Math.floor(Math.random() * 2000) + 1000,
-        quantity: 1
-      }],
-      createdAt: new Date().toISOString(),
+    // Create a simple order first
+    const orderData = {
+      orderNumber: body.orderNumber || `ORD-${Date.now()}`,
+      customerEmail: body.customerEmail || 'test@example.com',
+      customerName: body.customerName || 'Test User',
+      totalAmount: body.totalAmount || 0,
+      status: 'pending'
+    }
+    
+    // Add optional fields if they exist
+    if (body.items && body.items.length > 0) {
+      orderData.items = body.items
+    }
+    if (body.shippingAddress) {
+      if (typeof body.shippingAddress === 'string') {
+        orderData.shippingAddress = body.shippingAddress
+      } else {
+        orderData.shippingAddress = `${body.shippingAddress.firstName} ${body.shippingAddress.lastName}\n${body.shippingAddress.address}\n${body.shippingAddress.city}, ${body.shippingAddress.state} ${body.shippingAddress.zipCode}\n${body.shippingAddress.phone}`
+      }
+    }
+    if (body.paymentMethod) {
+      orderData.paymentMethod = body.paymentMethod
     }
 
-    return NextResponse.json({ success: true, order })
+    const order = await payload.create({
+      collection: 'orders',
+      data: orderData,
+    })
+
+    console.log('Order created successfully:', order)
+    return NextResponse.json({ success: true, doc: order })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
+    console.error('Error creating order:', error)
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to create order' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const payload = await getPayload({ config })
+    
+    const orders = await payload.find({
+      collection: 'orders',
+      sort: '-createdAt',
+      limit: 100
+    })
+
+    return NextResponse.json(orders)
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch orders' },
+      { status: 500 }
+    )
   }
 }

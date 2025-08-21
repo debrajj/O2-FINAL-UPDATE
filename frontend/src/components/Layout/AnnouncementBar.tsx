@@ -91,23 +91,12 @@ const AnnouncementBar: React.FC = () => {
       className={`${getBackgroundColor(announcement.backgroundColor, announcement.customBackgroundColor)} ${getTextColor(announcement.textColor, announcement.customTextColor)} py-2 px-4 text-center text-sm font-medium relative z-[9999]`}
       style={getCustomStyles()}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex-1" />
+      <div className="max-w-7xl mx-auto">
         <div 
-          className={`flex-1 text-center whitespace-nowrap ${announcement.link ? 'cursor-pointer hover:underline' : ''}`}
+          className={`text-center whitespace-nowrap ${announcement.link ? 'cursor-pointer hover:underline' : ''}`}
           onClick={handleClick}
         >
           {announcement.text}
-        </div>
-        <div className="flex-1 flex justify-end">
-          <button
-            onClick={() => setIsVisible(false)}
-            className={`${getTextColor(announcement.textColor, announcement.customTextColor)} hover:opacity-70 transition-opacity`}
-            style={announcement?.textColor === 'custom' && announcement?.customTextColor ? { color: announcement.customTextColor } : {}}
-            aria-label="Close announcement"
-          >
-            <X className="h-4 w-4" />
-          </button>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,35 @@ import { Separator } from '@/components/ui/separator';
 
 
 const Footer: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('http://localhost:3000/api/subscribers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setShowSuccess(true);
+        setEmail('');
+        setTimeout(() => setShowSuccess(false), 3000);
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <footer style={{ backgroundColor: '#121212' }} className="border-t border-border text-white font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -115,17 +144,24 @@ const Footer: React.FC = () => {
   <p className="text-sm text-gray-400 mb-4 max-w-xl mx-auto">
     Get exclusive offers, fitness tips, and product updates straight to your inbox.
   </p>
-  <form onSubmit={(e) => e.preventDefault()} className="w-full max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-3">
+  <form onSubmit={handleSubscribe} className="w-full max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-3">
     <input
       type="email"
       placeholder="Enter your email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
       required
-      className="w-full sm:flex-1 px-4 py-2 rounded-md bg-[#2a2a2a] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary"
+      className="w-full sm:flex-1 px-4 py-2 rounded-md bg-[#2a2a2a] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F9A245]"
     />
-    <Button type="submit" className="w-full sm:w-auto bg-primary text-white hover:bg-primary-dark transition">
-      Subscribe Now
+    <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-[#F9A245] text-white hover:bg-[#E86A12] transition disabled:opacity-50">
+      {isSubmitting ? 'Subscribing...' : 'Subscribe Now'}
     </Button>
   </form>
+  {showSuccess && (
+    <div className="mt-3 p-2 bg-[#40B75D] text-white rounded-lg text-center text-sm">
+      ✅ Successfully subscribed to O2 Nutrition updates!
+    </div>
+  )}
 </div>
 
         <Separator className="my-10 bg-gray-700" />
@@ -138,6 +174,10 @@ const Footer: React.FC = () => {
           <div className="flex items-center space-x-6" style={{ fontSize: '16px' }}>
             <Link to="/disclaimer" className="text-gray-400 hover:text-primary transition-colors">
               Disclaimer
+            </Link>
+            <span className="text-gray-500">|</span>
+            <Link to="/terms-conditions" className="text-gray-400 hover:text-primary transition-colors">
+              Terms & Conditions
             </Link>
             <span className="text-gray-500">|</span>
             <span className="text-gray-400">💳 100% Secure Payments</span>

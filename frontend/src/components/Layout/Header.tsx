@@ -137,6 +137,8 @@ const Header: React.FC = () => {
   const [desktopBrandsMenuOpen, setDesktopBrandsMenuOpen] = useState(false);
 
   const [desktopSupportMenuOpen, setDesktopSupportMenuOpen] = useState(false);
+  const [desktopHamburgerMenuOpen, setDesktopHamburgerMenuOpen] = useState(false);
+  const hamburgerMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Mobile menu states
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -777,11 +779,11 @@ const Header: React.FC = () => {
                   </Link>
 
                   <Link
-                    to="/about"
+                    to="/dubai-import"
                     className="flex items-center space-x-2 text-gray-700 hover:text-[#F9A246] py-2 transition-colors font-medium whitespace-nowrap"
                   >
-                    <BlogIcon />
-                    <span>About Us</span>
+                    <RocketIcon />
+                    <span>Dubai Import</span>
                   </Link>
 
                   <Link
@@ -792,22 +794,55 @@ const Header: React.FC = () => {
                     <span>Gift Card</span>
                   </Link>
 
+                  <Link
+                    to="/track-order"
+                    className="flex items-center space-x-2 text-gray-700 hover:text-[#F9A246] py-2 transition-colors font-medium whitespace-nowrap"
+                  >
+                    <Search className="h-4 w-4 text-gray-500" />
+                    <span>Track Order</span>
+                  </Link>
+
+                  <Link
+                    to="/store-locator"
+                    className="flex items-center space-x-2 text-gray-700 hover:text-[#F9A246] py-2 transition-colors font-medium whitespace-nowrap"
+                  >
+                    <MapPin className="h-4 w-4 text-gray-500" />
+                    <span>Store Locator</span>
+                  </Link>
+
                   <div
                     className="relative"
-                    onMouseEnter={handleSupportMenuEnter}
-                    onMouseLeave={handleSupportMenuLeave}
+                    onMouseEnter={() => {
+                      if (hamburgerMenuTimeoutRef.current) {
+                        clearTimeout(hamburgerMenuTimeoutRef.current);
+                      }
+                      setDesktopHamburgerMenuOpen(true);
+                    }}
+                    onMouseLeave={() => {
+                      hamburgerMenuTimeoutRef.current = setTimeout(() => {
+                        setDesktopHamburgerMenuOpen(false);
+                      }, 150);
+                    }}
                   >
-                    <button className="flex items-center space-x-2 text-gray-700 hover:text-[#F9A246] whitespace-nowrap py-2 transition-colors font-medium">
-                      <SupportIcon />
-                      <span>Customer Support</span>
-                      <ChevronDown className="h-4 w-4 text-gray-500" />
+                    <button className="flex items-center space-x-2 text-gray-700 hover:text-[#F9A246] py-2 transition-colors font-medium whitespace-nowrap">
+                      <Menu className="h-4 w-4 text-gray-500" />
+                      <span>More</span>
                     </button>
 
-                    {desktopSupportMenuOpen && (
+                    {desktopHamburgerMenuOpen && (
                       <div
-                        className="absolute top-full left-0 w-48 mt-2 z-[9997] bg-white shadow-xl border border-gray-200 rounded-lg py-2 font-['League_Spartan']"
-                        onMouseEnter={handleSupportMenuEnter}
-                        onMouseLeave={handleSupportMenuLeave}
+                        className="absolute top-full right-0 w-48 mt-2 z-[9997] bg-white shadow-xl border border-gray-200 rounded-lg py-2 font-['League_Spartan']"
+                        onMouseEnter={() => {
+                          if (hamburgerMenuTimeoutRef.current) {
+                            clearTimeout(hamburgerMenuTimeoutRef.current);
+                          }
+                          setDesktopHamburgerMenuOpen(true);
+                        }}
+                        onMouseLeave={() => {
+                          hamburgerMenuTimeoutRef.current = setTimeout(() => {
+                            setDesktopHamburgerMenuOpen(false);
+                          }, 150);
+                        }}
                       >
                         <Link
                           to="/contact"
@@ -820,12 +855,6 @@ const Header: React.FC = () => {
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#F9A246]"
                         >
                           About Us
-                        </Link>
-                        <Link
-                          to="/track-order"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#F9A246]"
-                        >
-                          Track Order
                         </Link>
                         <Link
                           to="/cart"
@@ -842,14 +871,6 @@ const Header: React.FC = () => {
                       </div>
                     )}
                   </div>
-
-                  <Link
-                    to="/store-locator"
-                    className="flex items-center space-x-2 text-gray-700 hover:text-[#F9A246] py-2 transition-colors font-medium whitespace-nowrap"
-                  >
-                    <MapPin className="h-4 w-4 text-gray-500" />
-                    <span>Store Locator</span>
-                  </Link>
                 </nav>
               </div>
             </div>
@@ -1173,12 +1194,12 @@ const Header: React.FC = () => {
                   </Link>
 
                   <Link
-                    to="/about"
+                    to="/dubai-import"
                     onClick={closeMobileMenu}
                     className="flex items-center space-x-4 text-gray-700 py-3 px-4 hover:bg-gray-50 hover:text-[#F9A246] transition-all duration-200 rounded-lg font-medium text-base"
                   >
-                    <BlogIcon className="w-5 h-5" />
-                    <span>About Us</span>
+                    <RocketIcon className="w-5 h-5" />
+                    <span>Dubai Import</span>
                   </Link>
 
                   <Link
@@ -1188,6 +1209,15 @@ const Header: React.FC = () => {
                   >
                     <GiftIcon className="w-5 h-5" />
                     <span>Gift Card</span>
+                  </Link>
+
+                  <Link
+                    to="/track-order"
+                    onClick={closeMobileMenu}
+                    className="flex items-center space-x-4 text-gray-700 py-3 px-4 hover:bg-gray-50 hover:text-[#F9A246] transition-all duration-200 rounded-lg font-medium text-base"
+                  >
+                    <Search className="w-5 h-5" />
+                    <span>Track Order</span>
                   </Link>
 
                   <Link
@@ -1285,7 +1315,8 @@ const Header: React.FC = () => {
       {(desktopMegaMenuOpen ||
         desktopBestsellerMenuOpen ||
         desktopBrandsMenuOpen ||
-        desktopSupportMenuOpen) && (
+        desktopSupportMenuOpen ||
+        desktopHamburgerMenuOpen) && (
         <div
           className="fixed inset-0 z-30 hidden md:block"
           onClick={() => {
@@ -1293,6 +1324,7 @@ const Header: React.FC = () => {
             setDesktopBestsellerMenuOpen(false);
             setDesktopBrandsMenuOpen(false);
             setDesktopSupportMenuOpen(false);
+            setDesktopHamburgerMenuOpen(false);
           }}
         />
       )}

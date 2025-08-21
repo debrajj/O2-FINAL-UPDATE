@@ -1,5 +1,6 @@
 import React from "react";
 import { Users, Target, Award, Heart } from "lucide-react";
+import SubscribeCTA from "@/components/SubscribeCTA";
 
 const About: React.FC = () => {
   return (
@@ -74,7 +75,7 @@ const About: React.FC = () => {
         </div>
 
         {/* Story */}
-        <div className="bg-white rounded-lg p-8 shadow-md">
+        <div className="bg-white rounded-lg p-8 shadow-md mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
           <div className="prose prose-lg max-w-none text-gray-600">
             <p className="mb-4">
@@ -94,6 +95,36 @@ const About: React.FC = () => {
               nutrition solutions for every stage of your fitness journey.
             </p>
           </div>
+        </div>
+
+        {/* Dubai Import */}
+        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-8 shadow-md mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Dubai Import Excellence</h2>
+          <div className="prose prose-lg max-w-none text-gray-600">
+            <p className="mb-4">
+              We maintain strategic partnerships with premium suppliers in Dubai, ensuring access 
+              to the finest international nutrition products. Our Dubai import operations allow us 
+              to bring you authentic, world-class supplements directly from leading global manufacturers.
+            </p>
+            <p className="mb-4">
+              Through our Dubai connections, we source exclusive products that meet international 
+              quality standards, providing our customers with access to premium nutrition solutions 
+              that are trusted worldwide.
+            </p>
+            <p>
+              Every Dubai import is carefully selected and quality-tested to ensure it meets our 
+              strict standards for purity, potency, and effectiveness.
+            </p>
+          </div>
+        </div>
+
+        {/* Subscribe CTA */}
+        <div className="max-w-2xl mx-auto">
+          <SubscribeCTA 
+            variant="banner"
+            title="Ready to Transform Your Health?"
+            description="Join our community and get expert nutrition guidance delivered to your inbox"
+          />
         </div>
       </div>
     </div>

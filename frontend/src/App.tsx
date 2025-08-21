@@ -10,6 +10,7 @@ import { GiftCardProvider } from "@/context/GiftCardContext";
 import Header from "@/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Index from "./pages/Index";
 import Category from "./pages/Category";
 import CategoryPage from "./pages/CategoryPage";
@@ -34,17 +35,22 @@ import BrandPage from "./pages/BrandPage";
 import NotFound from "./pages/NotFound";
 import ApiProducts from "./pages/ApiProducts";
 import TestApi from "./pages/TestApi";
+import DubaiImport from "./pages/DubaiImport";
+import TermsConditions from "./pages/TermsConditions";
+import SubscriptionPopup from "@/components/SubscriptionPopup";
+import ErrorBoundary from "@/components/ErrorBoundary";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <CartProvider>
-        <GiftCardProvider>
-          <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <CartProvider>
+          <GiftCardProvider>
+            <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
             <ScrollToTop />
             <div className="min-h-screen flex flex-col bg-background font-body">
               <Header />
@@ -75,18 +81,23 @@ const App = () => (
                   <Route path="/brand/:brandSlug" element={<BrandPage />} />
                   <Route path="/api-products" element={<ApiProducts />} />
                   <Route path="/test-api" element={<TestApi />} />
+                  <Route path="/dubai-import" element={<DubaiImport />} />
+                  <Route path="/terms-conditions" element={<TermsConditions />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
               <Footer />
+              <WhatsAppFloat />
+              <SubscriptionPopup />
             </div>
-          </BrowserRouter>
-          </TooltipProvider>
-        </GiftCardProvider>
-      </CartProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+            </BrowserRouter>
+            </TooltipProvider>
+          </GiftCardProvider>
+        </CartProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
