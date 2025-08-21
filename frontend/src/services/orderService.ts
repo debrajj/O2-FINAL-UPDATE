@@ -3,12 +3,12 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api
 export const orderService = {
   async fetchUserOrders(userId: string) {
     try {
-      const response = await fetch(`${API_BASE}/orders?where[customerEmail][equals]=${userId}`)
-      const data = await response.json()
-      return data.docs || []
+      const response = await fetch(`${API_BASE}/orders?userId=${userId}`);
+      const data = await response.json();
+      return data.success ? data.orders : [];
     } catch (error) {
-      console.error('Error fetching orders:', error)
-      return []
+      console.error("Error fetching orders:", error);
+      return [];
     }
   },
 
@@ -24,7 +24,7 @@ export const orderService = {
       console.log('Order API response:', data)
       
       if (data.success) {
-        return data.doc
+        return data.doc || data.order
       } else {
         console.error('Order creation failed:', data.error)
         return { success: true } // Return success to prevent frontend error
@@ -43,5 +43,37 @@ export const orderService = {
       console.error('Error validating pincode:', error)
       return true
     }
-  }
-}
+  },
+
+  async trackOrder(query: string) {
+    try {
+      const response = await fetch(
+        `${API_BASE}/orders/track?query=${encodeURIComponent(query)}`
+      );
+      const data = await response.json();
+      return data.success ? data.order : null;
+    } catch (error) {
+      console.error("Error tracking order:", error);
+      return null;
+    }
+  },
+
+  async updateOrderStatus(
+    orderId: string,
+    status: string,
+    timelineEntry?: any
+  ) {
+    try {
+      const response = await fetch(`${API_BASE}/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status, timelineEntry }),
+      });
+      const data = await response.json();
+      return data.success ? data.order : null;
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      return null;
+    }
+  },
+};

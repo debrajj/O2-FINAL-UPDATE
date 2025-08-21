@@ -101,7 +101,8 @@ type ProductData = {
 // Products will be loaded from API
 
 const ProductDetail: React.FC = () => {
-  const { id, slug } = useParams();
+  const { slug } = useParams();
+  const id = slug; // The slug parameter can be either a slug or an ID
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const navigate = useNavigate();
@@ -118,7 +119,7 @@ const ProductDetail: React.FC = () => {
   // Load product from API by slug or ID
   useEffect(() => {
     const loadProduct = async () => {
-      if (!id && !slug) {
+      if (!slug) {
         setError("No product identifier provided");
         setLoading(false);
         return;
@@ -129,12 +130,14 @@ const ProductDetail: React.FC = () => {
         setError(null);
         
         let response;
-        if (slug) {
-          console.log("Loading product with slug:", slug);
-          response = await productApi.getProductBySlug(slug);
+        // Try to load by slug first, if that fails try by ID
+        console.log("Loading product with identifier:", slug);
+        
+        // Check if slug is numeric (likely an ID)
+        if (/^\d+$/.test(slug)) {
+          response = await productApi.getProductById(slug);
         } else {
-          console.log("Loading product with ID:", id);
-          response = await productApi.getProductById(id);
+          response = await productApi.getProductBySlug(slug);
         }
         
         console.log("Product API response:", response);
@@ -152,7 +155,7 @@ const ProductDetail: React.FC = () => {
     };
 
     loadProduct();
-  }, [id, slug]);
+  }, [slug]);
 
   // Add state for selected flavor and weight
   const [selectedFlavor, setSelectedFlavor] = useState<string | undefined>(
@@ -169,7 +172,7 @@ const ProductDetail: React.FC = () => {
   // Scroll to top when component loads
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id, slug]);
+  }, [slug]);
 
   // Track recently viewed and load recent products
   useEffect(() => {

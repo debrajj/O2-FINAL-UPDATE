@@ -2,35 +2,77 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '../../../payload.config'
 
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get('userId')
+
+    const payload = await getPayload({ config })
+
+    if (userId) {
+      const result = await payload.find({
+        collection: 'orders',
+        where: {
+          userId: {
+            equals: userId,
+          },
+        },
+        sort: '-createdAt',
+        limit: 100,
+      })
+      return NextResponse.json({ success: true, orders: result.docs })
+    } else {
+      const orders = await payload.find({
+        collection: 'orders',
+        sort: '-createdAt',
+        limit: 100
+      })
+      return NextResponse.json(orders)
+    }
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+    return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 })
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
+    const data = await request.json()
     const payload = await getPayload({ config })
-    const body = await request.json()
-    
-    console.log('Creating order with data:', body)
 
-    // Create a simple order first
+    console.log('Creating order with data:', data)
+    console.log('Payment method received:', data.paymentMethod)
+    console.log('Payment method type:', typeof data.paymentMethod)
+
     const orderData = {
-      orderNumber: body.orderNumber || `ORD-${Date.now()}`,
-      customerEmail: body.customerEmail || 'test@example.com',
-      customerName: body.customerName || 'Test User',
-      totalAmount: body.totalAmount || 0,
-      status: 'pending'
-    }
-    
-    // Add optional fields if they exist
-    if (body.items && body.items.length > 0) {
-      orderData.items = body.items
-    }
-    if (body.shippingAddress) {
-      if (typeof body.shippingAddress === 'string') {
-        orderData.shippingAddress = body.shippingAddress
-      } else {
-        orderData.shippingAddress = `${body.shippingAddress.firstName} ${body.shippingAddress.lastName}\n${body.shippingAddress.address}\n${body.shippingAddress.city}, ${body.shippingAddress.state} ${body.shippingAddress.zipCode}\n${body.shippingAddress.phone}`
-      }
-    }
-    if (body.paymentMethod) {
-      orderData.paymentMethod = body.paymentMethod
+      orderNumber: data.orderNumber || `ORD-${Date.now()}`,
+      userId: data.userId || 'temp-user-id',
+      customerEmail: data.customerEmail,
+      status: 'pending' as const,
+      items: data.items?.map((item: any) => ({
+        id: String(item.product || item.id),
+        name: String(item.name),
+        image: item.image || '',
+        price: Number(item.price),
+        quantity: Number(item.quantity),
+        variant: item.variant || '',
+      })) || [],
+      subtotal: Number(data.subtotal || data.totalAmount || data.total || 0),
+      total: Number(data.totalAmount || data.total || 0),
+      shippingCost: Number(data.shippingCost || 0),
+      deliveryMethod: (data.deliveryMethod || 'standard') as 'standard' | 'express' | 'overnight',
+      paymentMethod: String(data.paymentMethod || 'COD').toUpperCase() as 'CARD' | 'UPI' | 'COD',
+      shippingAddress: {
+        firstName: String(data.shippingAddress?.firstName || ''),
+        lastName: String(data.shippingAddress?.lastName || ''),
+        address: String(data.shippingAddress?.address || ''),
+        apartment: data.shippingAddress?.apartment || '',
+        city: String(data.shippingAddress?.city || ''),
+        state: String(data.shippingAddress?.state || ''),
+        zipCode: String(data.shippingAddress?.zipCode || ''),
+        phone: String(data.shippingAddress?.phone || ''),
+      },
+      notes: data.notes || '',
     }
 
     const order = await payload.create({
@@ -39,32 +81,9 @@ export async function POST(request: NextRequest) {
     })
 
     console.log('Order created successfully:', order)
-    return NextResponse.json({ success: true, doc: order })
+    return NextResponse.json({ success: true, doc: order, order })
   } catch (error) {
     console.error('Error creating order:', error)
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create order' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function GET(request: NextRequest) {
-  try {
-    const payload = await getPayload({ config })
-    
-    const orders = await payload.find({
-      collection: 'orders',
-      sort: '-createdAt',
-      limit: 100
-    })
-
-    return NextResponse.json(orders)
-  } catch (error) {
-    console.error('Error fetching orders:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch orders' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
   }
 }

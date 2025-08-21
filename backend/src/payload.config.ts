@@ -18,7 +18,6 @@ import { Coupons } from './collections/coupons'
 import { Subscribers } from './collections/subscribers'
 import { Orders } from './collections/orders/index'
 
-
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -28,16 +27,19 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
-    components: {
-      views: {
-        SalesAnalytics: {
-          Component: '@/components/SalesAnalytics',
-          path: '/sales-analytics',
-        },
-      },
-    },
   },
-  collections: [Users, Media, Products, Category, Brands, Announcements, HeroBanner, Coupons, Subscribers, Orders],
+  collections: [
+    Users,
+    Media,
+    Products,
+    Category,
+    Brands,
+    Announcements,
+    HeroBanner,
+    Coupons,
+    Subscribers,
+    Orders,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -46,10 +48,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || 'mongodb://localhost:27017/o2_nutrition',
   }),
-  cors: [
-    'http://localhost:8081',
-    '*'
-  ],
+  cors: ['http://localhost:8081', '*'],
   sharp,
   plugins: [
     payloadCloudPlugin(),

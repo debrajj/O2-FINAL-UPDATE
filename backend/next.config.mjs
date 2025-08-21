@@ -1,23 +1,11 @@
-import { withPayload } from '@payloadcms/next/withPayload'
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your Next.js config here
-  serverExternalPackages: ['payload'],
-  logging: {
-    fetches: {
-      fullUrl: false,
-    },
-  },
-  webpack: (webpackConfig) => {
-    webpackConfig.resolve.extensionAlias = {
-      '.cjs': ['.cts', '.cjs'],
-      '.js': ['.ts', '.tsx', '.js', '.jsx'],
-      '.mjs': ['.mts', '.mjs'],
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('date-fns')
     }
-
-    return webpackConfig
+    return config
   },
 }
 
-export default withPayload(nextConfig, { devBundleServerPackages: false })
+export default nextConfig

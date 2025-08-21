@@ -13,8 +13,8 @@ const categories = [
       { name: "Proteins", slug: "proteins" },
       { name: "Pre/Post Workout", slug: "pre-post-workout" },
       { name: "Gainers", slug: "gainers" },
-      { name: "Fat Burners", slug: "fat-burners" }
-    ]
+      { name: "Fat Burners", slug: "fat-burners" },
+    ],
   },
   {
     id: 2,
@@ -22,17 +22,15 @@ const categories = [
     slug: "vitamins-supplements",
     subcategories: [
       { name: "Multivitamins", slug: "multivitamins" },
-      { name: "Omega Fatty Acids", slug: "omega-fatty-acids" }
-    ]
+      { name: "Omega Fatty Acids", slug: "omega-fatty-acids" },
+    ],
   },
   {
     id: 3,
     name: "AYURVEDA & HERBS",
     slug: "ayurveda-herbs",
-    subcategories: [
-      { name: "Vital Herbs", slug: "vital-herbs" }
-    ]
-  }
+    subcategories: [{ name: "Vital Herbs", slug: "vital-herbs" }],
+  },
 ];
 
 // Star Rating Component
@@ -93,7 +91,7 @@ const CategoryPage: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error('Failed to load products:', error);
+        console.error("Failed to load products:", error);
       } finally {
         setLoading(false);
       }
@@ -103,7 +101,7 @@ const CategoryPage: React.FC = () => {
   }, [categorySlug, subcategorySlug]);
 
   const handleProductClick = (product: Product) => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${product.slug}`);
   };
 
   const handleAddToCart = (product: Product) => {

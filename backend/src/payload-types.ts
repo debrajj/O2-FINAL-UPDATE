@@ -720,23 +720,91 @@ export interface Subscriber {
  */
 export interface Order {
   id: string;
-  orderNumber: string;
-  customerEmail: string;
-  customerName: string;
-  items: {
-    product: string | Product;
-    quantity: number;
-    price: number;
-    id?: string | null;
-  }[];
-  shippingAddress: string;
   /**
-   * Total order amount in INR
+   * Unique order number (e.g., ORD-2024-001)
    */
-  totalAmount: number;
-  paymentMethod: 'card' | 'upi' | 'cod';
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  orderDate: string;
+  orderNumber: string;
+  /**
+   * User ID from frontend
+   */
+  userId: string;
+  /**
+   * Customer email address
+   */
+  customerEmail: string;
+  /**
+   * Current order status
+   */
+  status:
+    | 'pending'
+    | 'confirmed'
+    | 'processing'
+    | 'shipped'
+    | 'in_transit'
+    | 'out_for_delivery'
+    | 'delivered'
+    | 'cancelled'
+    | 'returned'
+    | 'refunded';
+  /**
+   * Order items
+   */
+  items: {
+    /**
+     * Product ID
+     */
+    id: string;
+    /**
+     * Product name
+     */
+    name: string;
+    /**
+     * Product image URL
+     */
+    image?: string | null;
+    /**
+     * Unit price
+     */
+    price: number;
+    /**
+     * Quantity ordered
+     */
+    quantity: number;
+    /**
+     * Product variant (flavor, size, etc.)
+     */
+    variant?: string | null;
+  }[];
+  /**
+   * Subtotal amount
+   */
+  subtotal: number;
+  /**
+   * Total order amount
+   */
+  total: number;
+  /**
+   * Shipping cost
+   */
+  shippingCost?: number | null;
+  deliveryMethod: 'standard' | 'express' | 'overnight';
+  paymentMethod: 'CARD' | 'UPI' | 'COD';
+  /**
+   * Shipping address information
+   */
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    address: string;
+    apartment?: string | null;
+    city: string;
+    state: string;
+    zipCode: string;
+    phone: string;
+  };
+  /**
+   * Order notes or special instructions
+   */
   notes?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -1081,21 +1149,36 @@ export interface SubscribersSelect<T extends boolean = true> {
  */
 export interface OrdersSelect<T extends boolean = true> {
   orderNumber?: T;
+  userId?: T;
   customerEmail?: T;
-  customerName?: T;
+  status?: T;
   items?:
     | T
     | {
-        product?: T;
-        quantity?: T;
-        price?: T;
         id?: T;
+        name?: T;
+        image?: T;
+        price?: T;
+        quantity?: T;
+        variant?: T;
       };
-  shippingAddress?: T;
-  totalAmount?: T;
+  subtotal?: T;
+  total?: T;
+  shippingCost?: T;
+  deliveryMethod?: T;
   paymentMethod?: T;
-  status?: T;
-  orderDate?: T;
+  shippingAddress?:
+    | T
+    | {
+        firstName?: T;
+        lastName?: T;
+        address?: T;
+        apartment?: T;
+        city?: T;
+        state?: T;
+        zipCode?: T;
+        phone?: T;
+      };
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
