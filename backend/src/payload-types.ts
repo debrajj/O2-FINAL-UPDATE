@@ -75,6 +75,8 @@ export interface Config {
     announcements: Announcement;
     'hero-banner': HeroBanner;
     coupons: Coupon;
+    subscribers: Subscriber;
+    orders: Order;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -89,6 +91,8 @@ export interface Config {
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     'hero-banner': HeroBannerSelect<false> | HeroBannerSelect<true>;
     coupons: CouponsSelect<false> | CouponsSelect<true>;
+    subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -700,6 +704,45 @@ export interface Coupon {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers".
+ */
+export interface Subscriber {
+  id: string;
+  email: string;
+  phone?: string | null;
+  subscribedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: string;
+  orderNumber: string;
+  customerEmail: string;
+  customerName: string;
+  items: {
+    product: string | Product;
+    quantity: number;
+    price: number;
+    id?: string | null;
+  }[];
+  shippingAddress: string;
+  /**
+   * Total order amount in INR
+   */
+  totalAmount: number;
+  paymentMethod: 'card' | 'upi' | 'cod';
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  orderDate: string;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -736,6 +779,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'coupons';
         value: string | Coupon;
+      } | null)
+    | ({
+        relationTo: 'subscribers';
+        value: string | Subscriber;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: string | Order;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1010,6 +1061,42 @@ export interface CouponsSelect<T extends boolean = true> {
   excludedProducts?: T;
   firstTimeUserOnly?: T;
   showOnCart?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers_select".
+ */
+export interface SubscribersSelect<T extends boolean = true> {
+  email?: T;
+  phone?: T;
+  subscribedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  orderNumber?: T;
+  customerEmail?: T;
+  customerName?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        quantity?: T;
+        price?: T;
+        id?: T;
+      };
+  shippingAddress?: T;
+  totalAmount?: T;
+  paymentMethod?: T;
+  status?: T;
+  orderDate?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }

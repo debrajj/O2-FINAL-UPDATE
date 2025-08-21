@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   CreditCard,
@@ -10,6 +10,9 @@ import {
   ArrowLeft,
   Shield,
   Check,
+  CheckCircle,
+  XCircle,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,40 +29,28 @@ import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useCheckout } from "@/hooks/useCheckout";
 
 const Checkout: React.FC = () => {
   const { state, clearCart } = useCart();
   const { createOrder } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    address: "",
-    apartment: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    phone: "",
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    nameOnCard: "",
-  });
-
-  const [deliveryMethod, setDeliveryMethod] = useState("standard");
-  const [paymentMethod, setPaymentMethod] = useState("card");
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const checkout = useCheckout();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsProcessing(true);
+    
+    if (!checkout.validateForm()) {
+      toast({
+        title: "Please fix the errors",
+        description: "Check all required fields and try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    checkout.setProcessing(true);
 
     try {
       const orderNumber = Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -67,6 +58,7 @@ const Checkout: React.FC = () => {
       // Create order data
       const orderData = {
         orderNumber,
+        customerEmail: checkout.formData.email,
         items: state.items.map(item => ({
           id: item.id.toString(),
           name: item.name,
@@ -76,18 +68,18 @@ const Checkout: React.FC = () => {
           variant: item.variant || item.weight || undefined
         })),
         total: finalTotalINR,
-        paymentMethod: paymentMethod.toUpperCase(),
+        paymentMethod: checkout.paymentMethod.toUpperCase(),
         shippingAddress: {
           id: '1',
           type: 'home' as const,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          address: formData.address,
-          apartment: formData.apartment,
-          city: formData.city,
-          state: formData.state,
-          zipCode: formData.zipCode,
-          phone: formData.phone,
+          firstName: checkout.formData.firstName,
+          lastName: checkout.formData.lastName,
+          address: checkout.formData.address,
+          apartment: checkout.formData.apartment,
+          city: checkout.formData.city,
+          state: checkout.formData.state,
+          zipCode: checkout.formData.zipCode,
+          phone: checkout.formData.phone,
           isDefault: true
         }
       };
@@ -123,7 +115,7 @@ const Checkout: React.FC = () => {
         variant: "destructive"
       });
     } finally {
-      setIsProcessing(false);
+      checkout.setProcessing(false);
     }
   };
 
@@ -151,7 +143,7 @@ const Checkout: React.FC = () => {
     overnight: 399,
   };
   const shippingCostINR =
-    deliveryCharges[deliveryMethod as keyof typeof deliveryCharges];
+    deliveryCharges[checkout.deliveryMethod as keyof typeof deliveryCharges];
   const finalTotalINR = subtotalINR + shippingCostINR;
 
   return (
@@ -191,11 +183,14 @@ const Checkout: React.FC = () => {
                     id="email"
                     type="email"
                     placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                    value={checkout.formData.email}
+                    onChange={(e) => checkout.updateFormData("email", e.target.value)}
+                    className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.email ? 'border-red-500' : ''}`}
                     required
                   />
+                  {checkout.errors.email && (
+                    <p className="text-xs text-red-500 mt-1">{checkout.errors.email}</p>
+                  )}
                   <p className="text-xs text-gray-500 mt-1">
                     We'll send order updates to this email
                   </p>
@@ -223,11 +218,9 @@ const Checkout: React.FC = () => {
                     <Input
                       id="firstName"
                       placeholder="John"
-                      value={formData.firstName}
-                      onChange={(e) =>
-                        handleInputChange("firstName", e.target.value)
-                      }
-                      className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                      value={checkout.formData.firstName}
+                      onChange={(e) => checkout.updateFormData("firstName", e.target.value)}
+                      className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.firstName ? 'border-red-500' : ''}`}
                       required
                     />
                   </div>
@@ -241,11 +234,9 @@ const Checkout: React.FC = () => {
                     <Input
                       id="lastName"
                       placeholder="Doe"
-                      value={formData.lastName}
-                      onChange={(e) =>
-                        handleInputChange("lastName", e.target.value)
-                      }
-                      className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                      value={checkout.formData.lastName}
+                      onChange={(e) => checkout.updateFormData("lastName", e.target.value)}
+                      className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.lastName ? 'border-red-500' : ''}`}
                       required
                     />
                   </div>
@@ -261,11 +252,9 @@ const Checkout: React.FC = () => {
                   <Input
                     id="address"
                     placeholder="123 Main Street"
-                    value={formData.address}
-                    onChange={(e) =>
-                      handleInputChange("address", e.target.value)
-                    }
-                    className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                    value={checkout.formData.address}
+                    onChange={(e) => checkout.updateFormData("address", e.target.value)}
+                    className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.address ? 'border-red-500' : ''}`}
                     required
                   />
                 </div>
@@ -280,10 +269,8 @@ const Checkout: React.FC = () => {
                   <Input
                     id="apartment"
                     placeholder="Apt 4B"
-                    value={formData.apartment}
-                    onChange={(e) =>
-                      handleInputChange("apartment", e.target.value)
-                    }
+                    value={checkout.formData.apartment}
+                    onChange={(e) => checkout.updateFormData("apartment", e.target.value)}
                     className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
                   />
                 </div>
@@ -296,11 +283,9 @@ const Checkout: React.FC = () => {
                     <Input
                       id="city"
                       placeholder="Mumbai"
-                      value={formData.city}
-                      onChange={(e) =>
-                        handleInputChange("city", e.target.value)
-                      }
-                      className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                      value={checkout.formData.city}
+                      onChange={(e) => checkout.updateFormData("city", e.target.value)}
+                      className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.city ? 'border-red-500' : ''}`}
                       required
                     />
                   </div>
@@ -312,22 +297,49 @@ const Checkout: React.FC = () => {
                       State *
                     </Label>
                     <Select
-                      onValueChange={(value) =>
-                        handleInputChange("state", value)
-                      }
+                      onValueChange={(value) => checkout.updateFormData("state", value)}
                     >
                       <SelectTrigger className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]">
                         <SelectValue placeholder="Select state" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="mh">Maharashtra</SelectItem>
-                        <SelectItem value="dl">Delhi</SelectItem>
-                        <SelectItem value="ka">Karnataka</SelectItem>
-                        <SelectItem value="tn">Tamil Nadu</SelectItem>
+                        <SelectItem value="ap">Andhra Pradesh</SelectItem>
+                        <SelectItem value="ar">Arunachal Pradesh</SelectItem>
+                        <SelectItem value="as">Assam</SelectItem>
+                        <SelectItem value="br">Bihar</SelectItem>
+                        <SelectItem value="ct">Chhattisgarh</SelectItem>
+                        <SelectItem value="ga">Goa</SelectItem>
                         <SelectItem value="gj">Gujarat</SelectItem>
+                        <SelectItem value="hr">Haryana</SelectItem>
+                        <SelectItem value="hp">Himachal Pradesh</SelectItem>
+                        <SelectItem value="jh">Jharkhand</SelectItem>
+                        <SelectItem value="ka">Karnataka</SelectItem>
+                        <SelectItem value="kl">Kerala</SelectItem>
+                        <SelectItem value="mp">Madhya Pradesh</SelectItem>
+                        <SelectItem value="mh">Maharashtra</SelectItem>
+                        <SelectItem value="mn">Manipur</SelectItem>
+                        <SelectItem value="ml">Meghalaya</SelectItem>
+                        <SelectItem value="mz">Mizoram</SelectItem>
+                        <SelectItem value="nl">Nagaland</SelectItem>
+                        <SelectItem value="or">Odisha</SelectItem>
+                        <SelectItem value="pb">Punjab</SelectItem>
                         <SelectItem value="rj">Rajasthan</SelectItem>
+                        <SelectItem value="sk">Sikkim</SelectItem>
+                        <SelectItem value="tn">Tamil Nadu</SelectItem>
+                        <SelectItem value="tg">Telangana</SelectItem>
+                        <SelectItem value="tr">Tripura</SelectItem>
                         <SelectItem value="up">Uttar Pradesh</SelectItem>
+                        <SelectItem value="ut">Uttarakhand</SelectItem>
                         <SelectItem value="wb">West Bengal</SelectItem>
+                        <SelectItem value="an">Andaman and Nicobar Islands</SelectItem>
+                        <SelectItem value="ch">Chandigarh</SelectItem>
+                        <SelectItem value="dn">Dadra and Nagar Haveli</SelectItem>
+                        <SelectItem value="dd">Daman and Diu</SelectItem>
+                        <SelectItem value="dl">Delhi</SelectItem>
+                        <SelectItem value="jk">Jammu and Kashmir</SelectItem>
+                        <SelectItem value="la">Ladakh</SelectItem>
+                        <SelectItem value="ld">Lakshadweep</SelectItem>
+                        <SelectItem value="py">Puducherry</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -338,16 +350,30 @@ const Checkout: React.FC = () => {
                     >
                       PIN Code *
                     </Label>
-                    <Input
-                      id="zipCode"
-                      placeholder="400001"
-                      value={formData.zipCode}
-                      onChange={(e) =>
-                        handleInputChange("zipCode", e.target.value)
-                      }
-                      className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="zipCode"
+                        placeholder="400001"
+                        value={checkout.formData.zipCode}
+                        onChange={(e) => checkout.updateFormData("zipCode", e.target.value)}
+                        className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.zipCode ? 'border-red-500' : ''}`}
+                        required
+                      />
+                      {checkout.formData.zipCode && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          {checkout.pincodeValidating ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                          ) : checkout.isPincodeValid ? (
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                          ) : checkout.formData.zipCode.length === 6 ? (
+                            <XCircle className="h-4 w-4 text-red-500" />
+                          ) : null}
+                        </div>
+                      )}
+                    </div>
+                    {checkout.errors.zipCode && (
+                      <p className="text-xs text-red-500 mt-1">{checkout.errors.zipCode}</p>
+                    )}
                   </div>
                 </div>
 
@@ -359,9 +385,9 @@ const Checkout: React.FC = () => {
                     id="phone"
                     type="tel"
                     placeholder="+91 98765 43210"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                    value={checkout.formData.phone}
+                    onChange={(e) => checkout.updateFormData("phone", e.target.value)}
+                    className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.phone ? 'border-red-500' : ''}`}
                     required
                   />
                 </div>
@@ -380,22 +406,22 @@ const Checkout: React.FC = () => {
                 <div className="space-y-3">
                   <div
                     className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                      deliveryMethod === "standard"
+                      checkout.deliveryMethod === "standard"
                         ? "border-[#F9A245] bg-orange-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
-                    onClick={() => setDeliveryMethod("standard")}
+                    onClick={() => checkout.updateDeliveryMethod("standard")}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div
                           className={`w-4 h-4 rounded-full border-2 ${
-                            deliveryMethod === "standard"
+                            checkout.deliveryMethod === "standard"
                               ? "border-[#F9A245] bg-[#F9A245]"
                               : "border-gray-300"
                           }`}
                         >
-                          {deliveryMethod === "standard" && (
+                          {checkout.deliveryMethod === "standard" && (
                             <div className="w-full h-full rounded-full bg-white scale-50"></div>
                           )}
                         </div>
@@ -427,22 +453,22 @@ const Checkout: React.FC = () => {
 
                   <div
                     className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                      deliveryMethod === "express"
+                      checkout.deliveryMethod === "express"
                         ? "border-[#F9A245] bg-orange-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
-                    onClick={() => setDeliveryMethod("express")}
+                    onClick={() => checkout.updateDeliveryMethod("express")}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div
                           className={`w-4 h-4 rounded-full border-2 ${
-                            deliveryMethod === "express"
+                            checkout.deliveryMethod === "express"
                               ? "border-[#F9A245] bg-[#F9A245]"
                               : "border-gray-300"
                           }`}
                         >
-                          {deliveryMethod === "express" && (
+                          {checkout.deliveryMethod === "express" && (
                             <div className="w-full h-full rounded-full bg-white scale-50"></div>
                           )}
                         </div>
@@ -463,22 +489,22 @@ const Checkout: React.FC = () => {
 
                   <div
                     className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                      deliveryMethod === "overnight"
+                      checkout.deliveryMethod === "overnight"
                         ? "border-[#F9A245] bg-orange-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
-                    onClick={() => setDeliveryMethod("overnight")}
+                    onClick={() => checkout.updateDeliveryMethod("overnight")}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div
                           className={`w-4 h-4 rounded-full border-2 ${
-                            deliveryMethod === "overnight"
+                            checkout.deliveryMethod === "overnight"
                               ? "border-[#F9A245] bg-[#F9A245]"
                               : "border-gray-300"
                           }`}
                         >
-                          {deliveryMethod === "overnight" && (
+                          {checkout.deliveryMethod === "overnight" && (
                             <div className="w-full h-full rounded-full bg-white scale-50"></div>
                           )}
                         </div>
@@ -513,21 +539,21 @@ const Checkout: React.FC = () => {
                 <div className="space-y-3">
                   <div
                     className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                      paymentMethod === "card"
+                      checkout.paymentMethod === "card"
                         ? "border-[#F9A245] bg-orange-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
-                    onClick={() => setPaymentMethod("card")}
+                    onClick={() => checkout.updatePaymentMethod("card")}
                   >
                     <div className="flex items-center space-x-3">
                       <div
                         className={`w-4 h-4 rounded-full border-2 ${
-                          paymentMethod === "card"
+                          checkout.paymentMethod === "card"
                             ? "border-[#F9A245] bg-[#F9A245]"
                             : "border-gray-300"
                         }`}
                       >
-                        {paymentMethod === "card" && (
+                        {checkout.paymentMethod === "card" && (
                           <div className="w-full h-full rounded-full bg-white scale-50"></div>
                         )}
                       </div>
@@ -542,21 +568,21 @@ const Checkout: React.FC = () => {
 
                   <div
                     className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                      paymentMethod === "upi"
+                      checkout.paymentMethod === "upi"
                         ? "border-[#F9A245] bg-orange-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
-                    onClick={() => setPaymentMethod("upi")}
+                    onClick={() => checkout.updatePaymentMethod("upi")}
                   >
                     <div className="flex items-center space-x-3">
                       <div
                         className={`w-4 h-4 rounded-full border-2 ${
-                          paymentMethod === "upi"
+                          checkout.paymentMethod === "upi"
                             ? "border-[#F9A245] bg-[#F9A245]"
                             : "border-gray-300"
                         }`}
                       >
-                        {paymentMethod === "upi" && (
+                        {checkout.paymentMethod === "upi" && (
                           <div className="w-full h-full rounded-full bg-white scale-50"></div>
                         )}
                       </div>
@@ -571,21 +597,21 @@ const Checkout: React.FC = () => {
 
                   <div
                     className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                      paymentMethod === "cod"
+                      checkout.paymentMethod === "cod"
                         ? "border-[#F9A245] bg-orange-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
-                    onClick={() => setPaymentMethod("cod")}
+                    onClick={() => checkout.updatePaymentMethod("cod")}
                   >
                     <div className="flex items-center space-x-3">
                       <div
                         className={`w-4 h-4 rounded-full border-2 ${
-                          paymentMethod === "cod"
+                          checkout.paymentMethod === "cod"
                             ? "border-[#F9A245] bg-[#F9A245]"
                             : "border-gray-300"
                         }`}
                       >
-                        {paymentMethod === "cod" && (
+                        {checkout.paymentMethod === "cod" && (
                           <div className="w-full h-full rounded-full bg-white scale-50"></div>
                         )}
                       </div>
@@ -600,7 +626,7 @@ const Checkout: React.FC = () => {
                 </div>
 
                 {/* Card Details (only show when card is selected) */}
-                {paymentMethod === "card" && (
+                {checkout.paymentMethod === "card" && (
                   <div className="space-y-4 pt-4 border-t border-gray-200">
                     <div>
                       <Label
@@ -612,11 +638,9 @@ const Checkout: React.FC = () => {
                       <Input
                         id="nameOnCard"
                         placeholder="John Doe"
-                        value={formData.nameOnCard}
-                        onChange={(e) =>
-                          handleInputChange("nameOnCard", e.target.value)
-                        }
-                        className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                        value={checkout.formData.nameOnCard}
+                        onChange={(e) => checkout.updateFormData("nameOnCard", e.target.value)}
+                        className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.nameOnCard ? 'border-red-500' : ''}`}
                         required
                       />
                     </div>
@@ -631,11 +655,9 @@ const Checkout: React.FC = () => {
                       <Input
                         id="cardNumber"
                         placeholder="1234 5678 9012 3456"
-                        value={formData.cardNumber}
-                        onChange={(e) =>
-                          handleInputChange("cardNumber", e.target.value)
-                        }
-                        className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                        value={checkout.formData.cardNumber}
+                        onChange={(e) => checkout.updateFormData("cardNumber", e.target.value)}
+                        className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.cardNumber ? 'border-red-500' : ''}`}
                         required
                       />
                     </div>
@@ -651,11 +673,9 @@ const Checkout: React.FC = () => {
                         <Input
                           id="expiryDate"
                           placeholder="MM/YY"
-                          value={formData.expiryDate}
-                          onChange={(e) =>
-                            handleInputChange("expiryDate", e.target.value)
-                          }
-                          className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                          value={checkout.formData.expiryDate}
+                          onChange={(e) => checkout.updateFormData("expiryDate", e.target.value)}
+                          className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.expiryDate ? 'border-red-500' : ''}`}
                           required
                         />
                       </div>
@@ -669,11 +689,9 @@ const Checkout: React.FC = () => {
                         <Input
                           id="cvv"
                           placeholder="123"
-                          value={formData.cvv}
-                          onChange={(e) =>
-                            handleInputChange("cvv", e.target.value)
-                          }
-                          className="mt-1 focus:ring-[#F9A245] focus:border-[#F9A245]"
+                          value={checkout.formData.cvv}
+                          onChange={(e) => checkout.updateFormData("cvv", e.target.value)}
+                          className={`mt-1 focus:ring-[#F9A245] focus:border-[#F9A245] ${checkout.errors.cvv ? 'border-red-500' : ''}`}
                           required
                         />
                       </div>
@@ -688,7 +706,7 @@ const Checkout: React.FC = () => {
                 )}
 
                 {/* UPI Details (only show when UPI is selected) */}
-                {paymentMethod === "upi" && (
+                {checkout.paymentMethod === "upi" && (
                   <div className="space-y-4 pt-4 border-t border-gray-200">
                     <div>
                       <Label
@@ -714,7 +732,7 @@ const Checkout: React.FC = () => {
                 )}
 
                 {/* COD Details (only show when COD is selected) */}
-                {paymentMethod === "cod" && (
+                {checkout.paymentMethod === "cod" && (
                   <div className="pt-4 border-t border-gray-200">
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                       <div className="flex items-start space-x-2">
@@ -739,9 +757,9 @@ const Checkout: React.FC = () => {
               type="submit"
               size="lg"
               className="w-full bg-[#F9A245] hover:bg-[#e8913d] text-white"
-              disabled={isProcessing}
+              disabled={checkout.isProcessing}
             >
-              {isProcessing ? (
+              {checkout.isProcessing ? (
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span>Processing...</span>
@@ -796,9 +814,9 @@ const Checkout: React.FC = () => {
 
                 <div className="flex justify-between">
                   <span className="text-gray-600">
-                    {deliveryMethod === "standard" && "Standard Delivery"}
-                    {deliveryMethod === "express" && "Express Delivery"}
-                    {deliveryMethod === "overnight" && "Overnight Delivery"}
+                    {checkout.deliveryMethod === "standard" && "Standard Delivery"}
+                    {checkout.deliveryMethod === "express" && "Express Delivery"}
+                    {checkout.deliveryMethod === "overnight" && "Overnight Delivery"}
                   </span>
                   <span className="font-medium">
                     {shippingCostINR === 0 ? (

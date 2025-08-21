@@ -5,6 +5,7 @@ import categories from "@/data/categories.json";
 import slidesData from "@/data/slide.json";
 import productData from "@/data/homeproduct.json";
 import ShopByGoal from "@/components/ShopByGoal";
+import SubscribeCTA from "@/components/SubscribeCTA";
 import { productApi, Product as ApiProduct } from "@/services/api";
 
 // Import banner images
@@ -657,6 +658,41 @@ const Index: React.FC = () => {
       {/* Shop by Goal Component */}
       <ShopByGoal />
 
+      {/* Subscribe CTA Section */}
+      <section
+        className="py-16 bg-gradient-to-b from-[#f8fafc] via-[#fff9f2] to-[#f8fafc] relative overflow-hidden"
+        style={{
+          width: '100vw',
+          marginLeft: 'calc(-50vw + 50%)',
+          marginRight: 'calc(-50vw + 50%)',
+          paddingLeft: "clamp(1rem, 4vw, 4rem)",
+          paddingRight: "clamp(1rem, 4vw, 4rem)",
+        }}
+      >
+        <div className="w-full">
+          <div className="relative overflow-hidden rounded-xl" style={{
+            backgroundImage: 'url("https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#F9A245]/80 via-[#E86A12]/70 to-[#40B75D]/80"></div>
+            <div className="relative z-10 py-8 sm:py-16 px-4 sm:px-8">
+              <div className="text-center text-white mb-4 sm:mb-8">
+                <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">🚀 Join 10,000+ Fitness Enthusiasts!</h2>
+                <p className="text-base sm:text-xl opacity-90">Get exclusive O2 Nutrition deals, expert tips & early access to new products</p>
+              </div>
+              <div className="max-w-4xl mx-auto">
+                <SubscribeCTA 
+                  variant="banner"
+                  title=""
+                  description=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       {/* Loved by Experts - Only show if products are marked as lovedByExperts */}
       {lovedByExperts.length > 0 && (
@@ -1019,18 +1055,7 @@ const Index: React.FC = () => {
 
       </div>
       
-      {/* Sticky Cart Button */}
-      {state.itemCount > 0 && (
-        <div className="fixed bottom-4 right-4 z-[9999]">
-          <button
-            onClick={() => navigate('/cart')}
-            className="bg-[#F9A245] text-white px-4 py-3 rounded-full shadow-lg hover:bg-[#e8933a] transition-all duration-300 flex items-center space-x-2"
-          >
-            <ShoppingCart className="h-5 w-5" />
-            <span className="font-bold">{state.itemCount}</span>
-          </button>
-        </div>
-      )}
+
     </>
   );
 };

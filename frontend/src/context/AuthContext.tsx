@@ -375,45 +375,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const createOrder = async (orderData: any): Promise<boolean> => {
-    if (!user) {
-      console.error('Cannot create order: User not logged in');
-      return false;
-    }
-    
     try {
       // Try API first
-      const order = await orderService.createOrder({
-        ...orderData,
-        userId: user.id,
-        customerEmail: user.email,
+      const apiOrder = await orderService.createOrder({
+        orderNumber: orderData.orderNumber,
+        customerEmail: orderData.customerEmail || user?.email || 'guest@example.com',
+        customerName: `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
+        items: orderData.items.map((item: any) => ({
+          product: item.id,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        shippingAddress: orderData.shippingAddress,
+        totalAmount: orderData.total,
+        paymentMethod: orderData.paymentMethod.toLowerCase(),
+        status: 'pending'
       });
       
-      if (order) {
-        await fetchUserOrders(user.id);
-        return true;
-      }
-      
-      // Fallback: Create order locally if API fails
+      // Create local order for immediate display
       const newOrder: Order = {
         id: Date.now().toString(),
-        orderNumber: `ORD-${Date.now()}`,
+        orderNumber: orderData.orderNumber,
         date: new Date().toLocaleDateString(),
         status: 'pending',
-        items: orderData.items || [],
-        total: orderData.total || 0,
-        shippingAddress: orderData.shippingAddress || {
-          id: '1',
-          type: 'home',
-          firstName: user.firstName,
-          lastName: user.lastName,
-          address: '123 Main St',
-          city: 'Mumbai',
-          state: 'Maharashtra',
-          zipCode: '400001',
-          phone: user.phone || '+91 9876543210',
-          isDefault: true
-        },
-        paymentMethod: orderData.paymentMethod || 'UPI',
+        items: orderData.items,
+        total: orderData.total,
+        shippingAddress: orderData.shippingAddress,
+        paymentMethod: orderData.paymentMethod,
         trackingNumber: `TRK${Date.now()}`
       };
       
@@ -421,32 +409,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return true;
     } catch (error) {
       console.error('Error creating order:', error);
-      
-      // Create order locally as fallback
-      const newOrder: Order = {
-        id: Date.now().toString(),
-        orderNumber: `ORD-${Date.now()}`,
-        date: new Date().toLocaleDateString(),
-        status: 'pending',
-        items: orderData.items || [],
-        total: orderData.total || 0,
-        shippingAddress: orderData.shippingAddress || {
-          id: '1',
-          type: 'home',
-          firstName: user.firstName,
-          lastName: user.lastName,
-          address: '123 Main St',
-          city: 'Mumbai',
-          state: 'Maharashtra',
-          zipCode: '400001',
-          phone: user.phone || '+91 9876543210',
-          isDefault: true
-        },
-        paymentMethod: orderData.paymentMethod || 'UPI',
-        trackingNumber: `TRK${Date.now()}`
-      };
-      
-      setOrders(prev => [newOrder, ...prev]);
       return true;
     }
   };

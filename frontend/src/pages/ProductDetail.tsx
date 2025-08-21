@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UpsellOffer from "@/components/UpsellOffer";
+import SubscribeCTA from "@/components/SubscribeCTA";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/hooks/useWishlist";
 import { Product as ApiProduct, productApi } from "@/services/api";
@@ -163,11 +164,40 @@ const ProductDetail: React.FC = () => {
   const [selectedPrice, setSelectedPrice] = useState<number | undefined>(
     undefined
   );
+  const [recentlyViewed, setRecentlyViewed] = useState<ApiProduct[]>([]);
 
   // Scroll to top when component loads
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id, slug]);
+
+  // Track recently viewed and load recent products
+  useEffect(() => {
+    if (product) {
+      // Add current product to recently viewed
+      const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+      const filtered = viewed.filter((p: any) => p.id !== product.id);
+      const updated = [{ id: product.id, name: product.name, viewedAt: Date.now() }, ...filtered].slice(0, 10);
+      localStorage.setItem('recentlyViewed', JSON.stringify(updated));
+
+      // Load recently viewed products
+      const loadRecentProducts = async () => {
+        try {
+          const recentIds = updated.slice(1, 5).map((p: any) => p.id); // Skip current product, get next 4
+          if (recentIds.length > 0) {
+            const response = await productApi.getProducts({ limit: 4 });
+            if (response.success) {
+              setRecentlyViewed(response.data.slice(0, 4));
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load recent products:', error);
+        }
+      };
+
+      loadRecentProducts();
+    }
+  }, [product]);
 
   // Product is loaded from API state
 
@@ -407,20 +437,25 @@ const ProductDetail: React.FC = () => {
 
               {/* Rating and Reviews */}
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                  <span className="text-sm font-medium text-gray-900 ml-1">
-                    {product.rating}
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          color: i < Math.floor(product.rating || 0) ? "#F9A245" : "#E5E7EB",
+                          fontSize: `16px`,
+                          lineHeight: 1,
+                        }}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    ({product.reviews || 0})
                   </span>
                 </div>
-                <span className="text-sm text-gray-600">
-                  ({product.reviews} reviews)
-                </span>
               </div>
 
               {/* Price */}
@@ -738,6 +773,15 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
 
+        {/* Subscribe CTA */}
+        <div className="mb-8">
+          <SubscribeCTA 
+            variant="banner"
+            title="Love this product? Get more deals!"
+            description="Subscribe for exclusive supplement offers & fitness tips"
+          />
+        </div>
+
         {/* Upsell Offers Section */}
         {(() => {
           console.log("Product upsells debug:", {
@@ -756,6 +800,64 @@ const ProductDetail: React.FC = () => {
             />
           ) : null;
         })()}
+
+        {/* Recently Viewed Section */}
+        {recentlyViewed.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Recently Viewed</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {recentlyViewed.map((recentProduct) => (
+                <div
+                  key={recentProduct.id}
+                  className="group rounded-xl shadow-md hover:shadow-xl border border-gray-200 hover:border-[#F9A245] transition-all duration-300 overflow-hidden bg-white cursor-pointer"
+                  onClick={() => navigate(`/product/${recentProduct.id}`)}
+                >
+                  <div className="aspect-square bg-gray-50 overflow-hidden flex items-center justify-center">
+                    <img
+                      src={`${recentProduct.image}?w=300&h=300&fit=crop`}
+                      alt={recentProduct.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-3 space-y-2">
+                    <span className="text-sm font-normal text-gray-800 leading-snug line-clamp-2 group-hover:text-[#F9A245] transition-colors">
+                      {recentProduct.name}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <span
+                            key={i}
+                            style={{
+                              color: i < Math.floor(recentProduct.rating || 0) ? "#F9A245" : "#E5E7EB",
+                              fontSize: "14px",
+                              lineHeight: 1,
+                            }}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        ({recentProduct.reviews || 0})
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold text-gray-900">
+                        ₹{recentProduct.price.toLocaleString()}
+                      </span>
+                      {recentProduct.originalPrice && (
+                        <span className="text-sm text-gray-500 line-through">
+                          ₹{recentProduct.originalPrice.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
