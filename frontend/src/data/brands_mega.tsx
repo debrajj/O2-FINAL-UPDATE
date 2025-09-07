@@ -21,7 +21,15 @@ const brandCategories = [
       'One Science',
       'GNC',
       'AS-IT-IS Nutrition',
-      'Labrada'
+      'Labrada',
+      'Atom',
+      'Nakpro',
+      'Cloma Pharma',
+      'Condemned',
+      'Musclemeds',
+      'Universal',
+      'Fa Ice Hydro',
+      'ANDROPIQUE'
     ]
   },
   {
@@ -37,7 +45,8 @@ const brandCategories = [
       'Natures Velvet',
       'NutraFirst',
       'Plix Olena',
-      'HealthyHey Nutrition'
+      'HealthyHey Nutrition',
+      'Centrum'
     ]
   },
   {
