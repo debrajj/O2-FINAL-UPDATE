@@ -1,130 +1,90 @@
 import React from "react";
-import { Users, Target, Award, Heart } from "lucide-react";
-import SubscribeCTA from "@/components/SubscribeCTA";
 
 const About: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
       <section className="bg-gradient-hero py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="font-heading font-bold text-4xl lg:text-5xl text-foreground mb-6">
-            About Us
+            O² Nutrition – Our Story
           </h1>
-          <p className="font-body text-xl text-muted-foreground max-w-2xl mx-auto">
-            Your trusted partner in health and fitness, providing premium nutrition products 
-            to help you achieve your wellness goals.
+          <p className="font-body text-xl text-muted-foreground max-w-3xl mx-auto">
+            At O² Nutrition, we believe that fitness is not just about building bodies — it's about building trust, discipline, and a future where every athlete has access to the right fuel for their journey.
           </p>
         </div>
       </section>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
-        {/* Mission & Vision */}
-        <div className="grid md:grid-cols-2 gap-12 mb-16">
-          <div className="bg-white rounded-lg p-8 shadow-md">
-            <Target className="w-12 h-12 text-[#F9A246] mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
-            <p className="text-gray-600 leading-relaxed">
-              To empower individuals on their fitness journey by providing high-quality, 
-              scientifically-backed nutrition products that support optimal health and performance.
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="bg-white rounded-lg p-8 shadow-md mb-8">
+          <div className="prose prose-lg max-w-none text-gray-700">
+            <p className="mb-6">
+              We started with one simple idea: give athletes what they truly deserve — authentic supplements, transparent guidance, and real value. In an industry crowded with shortcuts, false promises, and fakes, we chose the harder path — honesty. Every product we provide is genuine, tested, and trusted, because we know that when it comes to your body, there can be no compromises.
             </p>
-          </div>
-          
-          <div className="bg-white rounded-lg p-8 shadow-md">
-            <Heart className="w-12 h-12 text-[#F9A246] mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Vision</h2>
-            <p className="text-gray-600 leading-relaxed">
-              To become the leading nutrition brand that transforms lives through premium products, 
-              expert guidance, and unwavering commitment to customer wellness.
+            <p className="mb-6">
+              Our name comes from the most vital element of life — Oxygen (O²). Just like oxygen flows through every breath, our mission flows into every corner of the fitness community. We are here not only to supply supplements, but also to provide clarity, direction, and support for every individual — from the young beginner stepping into the gym to the seasoned athlete preparing for national-level competitions.
             </p>
-          </div>
-        </div>
-
-        {/* Values */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Our Values</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <Award className="w-16 h-16 text-[#F9A246] mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Quality First</h3>
-              <p className="text-gray-600">
-                We source only the finest ingredients and maintain the highest quality standards 
-                in all our products.
-              </p>
+            
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 mt-8">What We Stand For:</h2>
+            <ul className="space-y-3 mb-6">
+              <li><strong>Transparency in Dealing</strong> – Clear communication, no hidden agendas. What you see is what you get.</li>
+              <li><strong>Authentic Supplements</strong> – Only genuine, fresh, and certified products, because your health is our first responsibility.</li>
+              <li><strong>Value for Money</strong> – Premium quality at the right price, ensuring you get maximum return on every rupee you invest in your fitness.</li>
+              <li><strong>Right Guidance</strong> – Personalized support for your fitness journey, from daily nutrition to advanced performance planning.</li>
+              <li><strong>Competition Preparation</strong> – Expert strategies, supplement cycles, and mentorship for athletes chasing the national and international stage.</li>
+              <li><strong>National-Level Presence</strong> – A brand born in India, for India, with a vision to serve athletes across every state, every city, every gym.</li>
+            </ul>
+            
+            <p className="mb-8">
+              The flash in our logo represents the spark of life and the unstoppable energy that drives transformation. It is not just a design — it's a reminder of what we deliver: strength, power, and performance at the speed of trust.
+            </p>
+            
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">The People Behind O² Nutrition</h2>
+            <p className="mb-4">
+              O² Nutrition is more than a company — it is the vision, passion, and relentless effort of a team of individuals who live and breathe fitness:
+            </p>
+            <ul className="space-y-2 mb-6">
+              <li><strong>Sumit Pal Singh</strong> – The Founder. The visionary who laid the foundation of O² Nutrition with the belief that authenticity and trust can change the fitness industry.</li>
+              <li><strong>Rajbir Gill</strong> – The Man Behind Change and Growth. Driving innovation and steering the brand toward new heights with strategic direction.</li>
+              <li><strong>Bharat Mehra</strong> – The Run Man for Everything. The powerhouse who ensures that every aspect of the brand keeps moving, no matter the challenge.</li>
+              <li><strong>Robinpuneet Singh</strong> – The Guardian of Essentials. Overseeing the critical pillars of the brand and making sure nothing is ever compromised.</li>
+              <li><strong>Nipun Gakhar</strong> – The Presence Builder. Strengthening O² Nutrition's reach and influence day by day, making the brand stronger across India.</li>
+              <li><strong>Manan Gakhar</strong> – The Ground Commander. Leading the on-ground team and ensuring smooth execution of work at every level.</li>
+              <li><strong>Siddhant Sharma</strong> – The Cloud Operations Manager. Handling the digital backbone and ensuring our operations remain strong and seamless.</li>
+            </ul>
+            
+            <p className="mb-8 italic text-center">
+              Together, they form the heart of O² Nutrition — a family bound not just by business, but by a shared passion for fitness, a commitment to authenticity, and a dream to build India's most trusted nutrition company.
+            </p>
+            
+            <div className="bg-orange-50 rounded-lg p-6 mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Founder's Note – Sumit Pal Singh</h2>
+              <blockquote className="italic text-gray-700">
+                <p className="mb-4">
+                  "When I started O² Nutrition, it wasn't just about selling supplements — it was about solving a problem. I saw athletes and fitness lovers struggling with fake products, false promises, and a lack of real guidance. I knew something had to change.
+                </p>
+                <p className="mb-4">
+                  From day one, my mission was clear: to create a brand built on trust, authenticity, and value. At O² Nutrition, we don't just provide products — we provide clarity, support, and a partner in your fitness journey.
+                </p>
+                <p className="mb-4">
+                  This journey hasn't been mine alone. With Rajbir, Bharat, Robinpuneet, Nipun, Manan, Jasvinder, Raja And Siddhant by my side, O² Nutrition has grown into a family — a family that shares the same fire and vision to serve athletes across India.
+                </p>
+                <p className="mb-4">
+                  Every scoop, every capsule, every consultation is built on one promise: your health, your performance, and your trust come first.
+                </p>
+                <p className="mb-4">
+                  Thank you for believing in us. Together, we will keep building not just stronger bodies, but a stronger fitness culture for India."
+                </p>
+                <footer className="text-right font-semibold">— Sumit Pal Singh, Founder, O² Nutrition</footer>
+              </blockquote>
             </div>
             
-            <div className="text-center">
-              <Users className="w-16 h-16 text-[#F9A246] mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Customer Focus</h3>
-              <p className="text-gray-600">
-                Your health goals are our priority. We're committed to providing exceptional 
-                service and support.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <Target className="w-16 h-16 text-[#F9A246] mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Innovation</h3>
-              <p className="text-gray-600">
-                We continuously research and develop new products to meet evolving 
-                health and fitness needs.
-              </p>
+            <div className="text-center bg-gradient-to-r from-[#F9A246] to-orange-400 rounded-lg p-6 text-white">
+              <p className="text-lg mb-2">We are more than a supplement company.</p>
+              <p className="text-lg mb-2">We are a family, a movement, a partner in your journey.</p>
+              <p className="mb-4">With every product, every consultation, every step forward, we stand by one promise:</p>
+              <p className="text-xl font-bold">O² Nutrition – Authentic Fuel. Real Results. Trusted Nationwide.</p>
             </div>
           </div>
-        </div>
-
-        {/* Story */}
-        <div className="bg-white rounded-lg p-8 shadow-md mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
-          <div className="prose prose-lg max-w-none text-gray-600">
-            <p className="mb-4">
-              Founded with a passion for health and wellness, O2 Nutrition began as a vision 
-              to make premium nutrition accessible to everyone. Our journey started when our 
-              founders recognized the gap between high-quality nutrition products and affordability.
-            </p>
-            <p className="mb-4">
-              Today, we're proud to serve thousands of customers across the country, offering 
-              a comprehensive range of supplements, proteins, vitamins, and wellness products. 
-              Our team of nutrition experts and fitness enthusiasts work tirelessly to curate 
-              products that deliver real results.
-            </p>
-            <p>
-              At O2 Nutrition, we believe that good health is not a luxury—it's a right. 
-              That's why we're committed to providing authentic, effective, and affordable 
-              nutrition solutions for every stage of your fitness journey.
-            </p>
-          </div>
-        </div>
-
-        {/* Dubai Import */}
-        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-8 shadow-md mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Dubai Import Excellence</h2>
-          <div className="prose prose-lg max-w-none text-gray-600">
-            <p className="mb-4">
-              We maintain strategic partnerships with premium suppliers in Dubai, ensuring access 
-              to the finest international nutrition products. Our Dubai import operations allow us 
-              to bring you authentic, world-class supplements directly from leading global manufacturers.
-            </p>
-            <p className="mb-4">
-              Through our Dubai connections, we source exclusive products that meet international 
-              quality standards, providing our customers with access to premium nutrition solutions 
-              that are trusted worldwide.
-            </p>
-            <p>
-              Every Dubai import is carefully selected and quality-tested to ensure it meets our 
-              strict standards for purity, potency, and effectiveness.
-            </p>
-          </div>
-        </div>
-
-        {/* Subscribe CTA */}
-        <div className="max-w-2xl mx-auto">
-          <SubscribeCTA 
-            variant="banner"
-            title="Ready to Transform Your Health?"
-            description="Join our community and get expert nutrition guidance delivered to your inbox"
-          />
         </div>
       </div>
     </div>

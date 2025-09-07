@@ -29,7 +29,12 @@ const brandCategories = [
       'Musclemeds',
       'Universal',
       'Fa Ice Hydro',
-      'ANDROPIQUE'
+      'ANDROPIQUE',
+      'Fuel One',
+      'True Basics',
+      'Nakpro Protein',
+      'Ace Blend',
+      'Myodrol'
     ]
   },
   {
@@ -46,7 +51,14 @@ const brandCategories = [
       'NutraFirst',
       'Plix Olena',
       'HealthyHey Nutrition',
-      'Centrum'
+      'Centrum',
+      'CureGarden',
+      'Tata 1mg',
+      'Natureyz',
+      'Miduty',
+      'Whats Up Wellness',
+      'Carbamide Forte',
+      'Beautywise'
     ]
   },
   {
