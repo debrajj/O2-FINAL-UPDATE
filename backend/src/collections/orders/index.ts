@@ -337,8 +337,8 @@ export const Orders: CollectionConfig = {
           type: 'select',
           required: true,
           options: [
-            { label: 'Credit Card', value: 'credit_card' },
-            { label: 'Debit Card', value: 'debit_card' },
+            // { label: 'Credit Card', value: 'credit_card' },
+            { label: 'Debit Card/Credit Card', value: 'card' },
             { label: 'UPI', value: 'upi' },
             { label: 'Net Banking', value: 'net_banking' },
             { label: 'Cash on Delivery', value: 'cod' },

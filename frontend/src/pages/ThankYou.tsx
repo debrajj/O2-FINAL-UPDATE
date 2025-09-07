@@ -1,34 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { CheckCircle, Download, Truck, Mail, Gift, Copy } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { CheckCircle, Download, Truck, Mail, Gift, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ThankYou: React.FC = () => {
-  const [giftCode, setGiftCode] = useState('');
+  const [giftCode, setGiftCode] = useState("");
   const [loading, setLoading] = useState(true);
-  const orderNumber = 'NS-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-  const estimatedDelivery = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString();
+  const orderNumber =
+    "NS-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+  const estimatedDelivery = new Date(
+    Date.now() + 3 * 24 * 60 * 60 * 1000
+  ).toLocaleDateString();
 
   useEffect(() => {
     // Only generate gift card if a gift card was purchased
     const urlParams = new URLSearchParams(window.location.search);
-    const isGiftCardPurchase = urlParams.get('giftcard') === 'true';
-    
+    const isGiftCardPurchase = urlParams.get("giftcard") === "true";
+
     if (isGiftCardPurchase) {
       const generateGiftCard = async () => {
         try {
-          const response = await fetch('http://localhost:3000/api/payment-success', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: 100 })
-          });
+          const response = await fetch(
+            `${import.meta.env.API_BASE_URL}/api/payment-success`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ amount: 100 }),
+            }
+          );
           const data = await response.json();
           if (data.success) {
             setGiftCode(data.giftCode);
           }
         } catch (error) {
-          console.error('Failed to generate gift card');
+          console.error("Failed to generate gift card");
         } finally {
           setLoading(false);
         }
@@ -76,7 +82,9 @@ const ThankYou: React.FC = () => {
                   As a thank you, here's your unique 12-digit gift card code:
                 </p>
                 <div className="bg-white p-4 rounded-lg border border-[#F9A245]/30 flex items-center justify-between">
-                  <span className="font-mono text-lg font-bold text-[#F9A245]">{giftCode}</span>
+                  <span className="font-mono text-lg font-bold text-[#F9A245]">
+                    {giftCode}
+                  </span>
                   <Button onClick={copyGiftCode} variant="outline" size="sm">
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -102,10 +110,14 @@ const ThankYou: React.FC = () => {
               </div>
               <div>
                 <span className="text-muted-foreground">Order Date:</span>
-                <p className="font-semibold">{new Date().toLocaleDateString()}</p>
+                <p className="font-semibold">
+                  {new Date().toLocaleDateString()}
+                </p>
               </div>
               <div>
-                <span className="text-muted-foreground">Estimated Delivery:</span>
+                <span className="text-muted-foreground">
+                  Estimated Delivery:
+                </span>
                 <p className="font-semibold">{estimatedDelivery}</p>
               </div>
               <div>
@@ -132,7 +144,7 @@ const ThankYou: React.FC = () => {
                   You'll receive an order confirmation email shortly.
                 </p>
               </div>
-              
+
               <div className="text-center space-y-2">
                 <div className="w-12 h-12 mx-auto bg-primary/20 rounded-full flex items-center justify-center">
                   <Truck className="h-6 w-6 text-primary" />
@@ -142,7 +154,7 @@ const ThankYou: React.FC = () => {
                   We'll prepare your order for shipping within 24 hours.
                 </p>
               </div>
-              
+
               <div className="text-center space-y-2">
                 <div className="w-12 h-12 mx-auto bg-primary/20 rounded-full flex items-center justify-center">
                   <Download className="h-6 w-6 text-primary" />
@@ -174,7 +186,8 @@ const ThankYou: React.FC = () => {
         <div className="bg-muted/50 rounded-lg p-6 text-center">
           <h3 className="font-semibold mb-2">Need Help?</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            If you have any questions about your order, feel free to contact our support team.
+            If you have any questions about your order, feel free to contact our
+            support team.
           </p>
           <div className="flex flex-col sm:flex-row gap-2 justify-center">
             <Link to="/contact">

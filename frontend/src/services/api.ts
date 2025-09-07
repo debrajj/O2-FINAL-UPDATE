@@ -1,5 +1,5 @@
-const API_BASE_URL = "http://localhost:3000/api";
-const PAYLOAD_API_BASE = "http://localhost:3000/api";
+const API_BASE_URL = `${import.meta.env.API_BASE_URL}api`;
+const PAYLOAD_API_BASE = `${import.meta.env.API_BASE_URL}api`;
 
 export interface Product {
   id: string;
@@ -50,7 +50,17 @@ export interface Product {
     weight?: string;
     price?: number;
   }[];
-  bundledOffers?: any[];
+  bundledOffers?: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    productIds?: Array<{
+      productId?: number;
+    }>;
+    originalPrice?: number;
+    bundlePrice?: number;
+    savings?: number;
+  }>;
   upsells?: Array<{
     upsellProduct: Product;
     discountPercentage: number;
@@ -121,28 +131,28 @@ export const productApi = {
     // Convert filters to Payload query format
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") {
-        if (key === 'search') {
-          params.append('where[name][contains]', value.toString());
-        } else if (key === 'category') {
-          params.append('where[category][equals]', value.toString());
-        } else if (key === 'subcategory') {
-          params.append('where[subcategory][equals]', value.toString());
-        } else if (key === 'brand') {
-          params.append('where[brand][equals]', value.toString());
-        } else if (key === 'featured') {
-          params.append('where[featured][equals]', value.toString());
-        } else if (key === 'trending') {
-          params.append('where[trending][equals]', value.toString());
-        } else if (key === 'bestSeller') {
-          params.append('where[bestSeller][equals]', value.toString());
-        } else if (key === 'lovedByExperts') {
-          params.append('where[lovedByExperts][equals]', value.toString());
-        } else if (key === 'onSale') {
-          params.append('where[onSale][equals]', value.toString());
-        } else if (key === 'minPrice') {
-          params.append('where[price][greater_than_equal]', value.toString());
-        } else if (key === 'maxPrice') {
-          params.append('where[price][less_than_equal]', value.toString());
+        if (key === "search") {
+          params.append("where[name][contains]", value.toString());
+        } else if (key === "category") {
+          params.append("where[category][equals]", value.toString());
+        } else if (key === "subcategory") {
+          params.append("where[subcategory][equals]", value.toString());
+        } else if (key === "brand") {
+          params.append("where[brand][equals]", value.toString());
+        } else if (key === "featured") {
+          params.append("where[featured][equals]", value.toString());
+        } else if (key === "trending") {
+          params.append("where[trending][equals]", value.toString());
+        } else if (key === "bestSeller") {
+          params.append("where[bestSeller][equals]", value.toString());
+        } else if (key === "lovedByExperts") {
+          params.append("where[lovedByExperts][equals]", value.toString());
+        } else if (key === "onSale") {
+          params.append("where[onSale][equals]", value.toString());
+        } else if (key === "minPrice") {
+          params.append("where[price][greater_than_equal]", value.toString());
+        } else if (key === "maxPrice") {
+          params.append("where[price][less_than_equal]", value.toString());
         } else {
           params.append(key, value.toString());
         }
@@ -150,7 +160,7 @@ export const productApi = {
     });
 
     // Add depth for relationships
-    params.append('depth', '2');
+    params.append("depth", "2");
 
     const url = `${PAYLOAD_API_BASE}/products?${params}`;
 
@@ -180,8 +190,13 @@ export const productApi = {
     id: string
   ): Promise<{ success: boolean; data?: Product; error?: string }> {
     try {
-      console.log("Fetching product from:", `${PAYLOAD_API_BASE}/products/${id}`);
-      const response = await fetch(`${PAYLOAD_API_BASE}/products/${id}?depth=2`);
+      console.log(
+        "Fetching product from:",
+        `${PAYLOAD_API_BASE}/products/${id}`
+      );
+      const response = await fetch(
+        `${PAYLOAD_API_BASE}/products/${id}?depth=2`
+      );
       console.log("Product fetch response status:", response.status);
 
       if (!response.ok) {
@@ -214,8 +229,10 @@ export const productApi = {
     slug: string
   ): Promise<{ success: boolean; data?: Product; error?: string }> {
     try {
-      const response = await fetch(`${PAYLOAD_API_BASE}/products?where[slug][equals]=${slug}&depth=2`);
-      
+      const response = await fetch(
+        `${PAYLOAD_API_BASE}/products?where[slug][equals]=${slug}&depth=2`
+      );
+
       if (!response.ok) {
         return {
           success: false,
@@ -370,7 +387,9 @@ export const productApi = {
 export const categoryApi = {
   async getCategories(): Promise<CategoriesResponse> {
     try {
-      const response = await fetch(`${PAYLOAD_API_BASE}/category?where[isActive][equals]=true&sort=displayOrder`);
+      const response = await fetch(
+        `${PAYLOAD_API_BASE}/category?where[isActive][equals]=true&sort=displayOrder`
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -434,7 +453,9 @@ export const categoryApi = {
     slug: string
   ): Promise<{ success: boolean; data?: Category; error?: string }> {
     try {
-      const response = await fetch(`${PAYLOAD_API_BASE}/category?where[slug][equals]=${slug}`);
+      const response = await fetch(
+        `${PAYLOAD_API_BASE}/category?where[slug][equals]=${slug}`
+      );
 
       if (!response.ok) {
         return {
@@ -480,10 +501,10 @@ export const brandApi = {
       }
 
       const data = await response.json();
-      
+
       // Extract brand names from Payload response
-      const brandNames = data.docs?.map((brand: any) => brand.name) || [];
-      
+      const brandNames = data.docs || [];
+
       return {
         success: true,
         data: brandNames,
@@ -504,6 +525,17 @@ export interface SearchSuggestion {
   type: "product" | "brand" | "category";
   value: string;
   count?: number;
+}
+
+interface RawHeroBanner {
+  id: string;
+  title?: string;
+  description?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  desktopImage: string | { url: string; alt?: string };
+  mobileImage?: string | { url: string; alt?: string } | null;
+  isActive?: boolean;
 }
 
 export interface HeroBanner {
@@ -546,7 +578,7 @@ export const heroBannerApi = {
 
       if (data.docs && data.docs.length > 0) {
         // Transform the data to match expected format
-        const transformedBanners = data.docs.map((banner: any) => ({
+        const transformedBanners = data.docs.map((banner: RawHeroBanner) => ({
           id: banner.id,
           title: banner.title,
           description: banner.description,
@@ -650,7 +682,7 @@ export interface Coupon {
   code: string;
   title: string;
   description?: string;
-  discountType: 'percentage' | 'fixed' | 'free_shipping';
+  discountType: "percentage" | "fixed" | "free_shipping";
   discountValue: number;
   minimumOrderValue: number;
   maximumDiscountAmount?: number;

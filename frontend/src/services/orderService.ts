@@ -1,4 +1,64 @@
-const API_BASE = "http://localhost:3000/api";
+const API_BASE = `${import.meta.env.API_BASE_URL}api`;
+
+interface OrderData {
+  userId: string;
+  customerEmail: string;
+  items: {
+    id: string;
+    name: string;
+    image?: string;
+    price: number;
+    quantity: number;
+    variant?: string;
+    isUpsell?: boolean;
+    upsellDiscount?: number;
+    originalPrice?: number;
+  }[];
+  subtotal: number;
+  total: number;
+  shippingCost: number;
+  discountAmount?: number;
+  deliveryMethod?: string;
+  paymentMethod?: string;
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    address: string;
+    apartment?: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    phone: string;
+  };
+  customerName?: {
+    firstName: string;
+    lastName: string;
+  };
+  estimatedDelivery?: string;
+  trackingNumber?: string;
+  carrier?: string;
+  transactionId?: string;
+  coupons?: string[];
+  notes?: string;
+}
+
+interface TimelineEntry {
+  status:
+    | "order_placed"
+    | "order_confirmed"
+    | "processing"
+    | "shipped"
+    | "in_transit"
+    | "out_for_delivery"
+    | "delivered"
+    | "cancelled"
+    | "returned"
+    | "refunded";
+  title: string;
+  description?: string;
+  timestamp: string;
+  location?: string;
+}
 
 export const orderService = {
   async fetchUserOrders(userId: string) {
@@ -12,7 +72,7 @@ export const orderService = {
     }
   },
 
-  async createOrder(orderData: any) {
+  async createOrder(orderData: OrderData) {
     try {
       const response = await fetch(`${API_BASE}/orders`, {
         method: "POST",
@@ -43,7 +103,7 @@ export const orderService = {
   async updateOrderStatus(
     orderId: string,
     status: string,
-    timelineEntry?: any
+    timelineEntry?: TimelineEntry
   ) {
     try {
       const response = await fetch(`${API_BASE}/orders/${orderId}`, {

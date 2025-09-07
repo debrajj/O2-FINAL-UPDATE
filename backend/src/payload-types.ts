@@ -850,7 +850,7 @@ export interface Order {
    * Payment information
    */
   payment: {
-    method: 'credit_card' | 'debit_card' | 'upi' | 'net_banking' | 'cod' | 'wallet';
+    method: 'card' | 'upi' | 'net_banking' | 'cod' | 'wallet';
     status: 'pending' | 'paid' | 'failed' | 'refunded' | 'partially_refunded';
     /**
      * Payment gateway transaction ID
