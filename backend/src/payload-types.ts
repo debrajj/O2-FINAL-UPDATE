@@ -184,21 +184,39 @@ export interface Product {
   name: string;
   slug: string;
   /**
+   * Choose how to add main product image
+   */
+  imageType: 'upload' | 'url';
+  /**
+   * Upload main product image
+   */
+  mainImage?: (string | null) | Media;
+  /**
    * Main product image URL
    */
-  image: string;
+  imageUrl?: string | null;
   /**
-   * Additional product images
+   * Additional product images (max 10)
    */
-  images?:
+  additionalImages?:
     | {
-        /**
-         * Image URL
-         */
-        url?: string | null;
+        imageType?: ('upload' | 'url') | null;
+        image?: (string | null) | Media;
+        imageUrl?: string | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Auto-populated from individual image fields
+   */
+  images?:
+    | {
+        url?: string | null;
+        imageType?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  image?: string | null;
   /**
    * Product rating (0-5 stars)
    */
@@ -970,13 +988,25 @@ export interface MediaSelect<T extends boolean = true> {
 export interface ProductsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
-  image?: T;
+  imageType?: T;
+  mainImage?: T;
+  imageUrl?: T;
+  additionalImages?:
+    | T
+    | {
+        imageType?: T;
+        image?: T;
+        imageUrl?: T;
+        id?: T;
+      };
   images?:
     | T
     | {
         url?: T;
+        imageType?: T;
         id?: T;
       };
+  image?: T;
   rating?: T;
   reviews?: T;
   price?: T;

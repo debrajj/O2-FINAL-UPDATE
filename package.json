@@ -8,9 +8,12 @@
     "frontend"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "npm run kill-ports && concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
+    "dev:frontend": "npm run kill:8080 && cd frontend && npm run dev",
+    "kill-ports": "npm run kill:3001 && npm run kill:8080",
+    "kill:3001": "lsof -ti:3001 | xargs kill -9 2>/dev/null || true",
+    "kill:8080": "lsof -ti:8080 | xargs kill -9 2>/dev/null || true",
     "build": "npm run build:backend && npm run build:frontend",
     "build:backend": "cd backend && npm run build",
     "build:frontend": "cd frontend && npm run build",

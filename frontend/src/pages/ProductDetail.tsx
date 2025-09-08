@@ -11,6 +11,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UpsellOffer from "@/components/UpsellOffer";
 import SubscribeCTA from "@/components/SubscribeCTA";
+import ProductImageGallery from "@/components/ProductImageGallery";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/hooks/useWishlist";
 import { Product as ApiProduct, productApi } from "@/services/api";
@@ -335,87 +336,11 @@ const ProductDetail: React.FC = () => {
 
         {/* Main Product Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 mb-8">
-          <div className="space-y-4">
-            {/* Product Images */}
-            <div className="relative">
-              <div
-                className="aspect-square bg-white rounded-lg overflow-hidden shadow-sm relative cursor-crosshair"
-                onMouseEnter={() => setIsZoomed(true)}
-                onMouseLeave={() => setIsZoomed(false)}
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const x = ((e.clientX - rect.left) / rect.width) * 100;
-                  const y = ((e.clientY - rect.top) / rect.height) * 100;
-                  setMousePosition({ x, y });
-                }}
-              >
-                <img
-                  src={
-                    product.images && product.images[selectedImageIndex]
-                      ? typeof product.images[selectedImageIndex] === "string"
-                        ? product.images[selectedImageIndex]
-                        : product.images[selectedImageIndex].url
-                      : product.image
-                  }
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-                {isZoomed && (
-                  <div
-                    className="absolute w-32 h-32 border-2 border-gray-400 bg-white bg-opacity-20 pointer-events-none"
-                    style={{
-                      left: `${mousePosition.x}%`,
-                      top: `${mousePosition.y}%`,
-                      transform: "translate(-50%, -50%)",
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Magnifier Window */}
-              {isZoomed && (
-                <div className="absolute left-full top-0 ml-4 w-96 h-96 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-10">
-                  <div
-                    className="w-full h-full bg-cover bg-no-repeat"
-                    style={{
-                      backgroundImage: `url(${
-                        product.images && product.images[selectedImageIndex]
-                          ? typeof product.images[selectedImageIndex] ===
-                            "string"
-                            ? product.images[selectedImageIndex]
-                            : product.images[selectedImageIndex].url
-                          : product.image
-                      })`,
-                      backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
-                      backgroundSize: "250%",
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-            {/* Thumbnail Gallery */}
-            {product.images && product.images.length > 1 && (
-              <div className="flex space-x-2 overflow-x-auto pb-2">
-                {product.images.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImageIndex(index)}
-                    className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                      selectedImageIndex === index
-                        ? "border-[#F9A245] ring-2 ring-[#F9A245]/20"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <img
-                      src={typeof image === "string" ? image : image.url}
-                      alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <ProductImageGallery
+            mainImage={product.image}
+            additionalImages={product.images || []}
+            productName={product.name}
+          />
 
           <div className="space-y-6">
             {/* Product Info */}

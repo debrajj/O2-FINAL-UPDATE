@@ -166,10 +166,24 @@ export const productApi = {
 
     const data = await response.json();
 
-    // Transform Payload response to expected format
+    // Transform Payload response to expected format and fix image URLs
+    const transformedProducts = (data.docs || []).map((product: any) => ({
+      ...product,
+      // Fix image URLs to include backend URL
+      image: product.image && product.image.startsWith('/') 
+        ? `http://localhost:3001${product.image}` 
+        : product.image,
+      images: product.images?.map((img: any) => ({
+        ...img,
+        url: img.url && img.url.startsWith('/') 
+          ? `http://localhost:3001${img.url}` 
+          : img.url
+      })) || []
+    }));
+
     return {
       success: true,
-      data: data.docs || [],
+      data: transformedProducts,
       pagination: {
         page: data.page || 1,
         totalPages: data.totalPages || 1,
@@ -200,10 +214,23 @@ export const productApi = {
       const data = await response.json();
       console.log("Product fetch data:", data);
 
-      // Payload returns the product directly, not wrapped in a success object
+      // Transform image URLs and return
+      const transformedProduct = {
+        ...data,
+        image: data.image && data.image.startsWith('/') 
+          ? `http://localhost:3001${data.image}` 
+          : data.image,
+        images: data.images?.map((img: any) => ({
+          ...img,
+          url: img.url && img.url.startsWith('/') 
+            ? `http://localhost:3001${img.url}` 
+            : img.url
+        })) || []
+      };
+
       return {
         success: true,
-        data: data,
+        data: transformedProduct,
       };
     } catch (error) {
       console.error("Product fetch network error:", error);
@@ -237,9 +264,23 @@ export const productApi = {
         };
       }
 
+      // Transform image URLs
+      const transformedProduct = {
+        ...product,
+        image: product.image && product.image.startsWith('/') 
+          ? `http://localhost:3001${product.image}` 
+          : product.image,
+        images: product.images?.map((img: any) => ({
+          ...img,
+          url: img.url && img.url.startsWith('/') 
+            ? `http://localhost:3001${img.url}` 
+            : img.url
+        })) || []
+      };
+
       return {
         success: true,
-        data: product,
+        data: transformedProduct,
       };
     } catch (error) {
       return {

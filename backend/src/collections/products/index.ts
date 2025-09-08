@@ -65,6 +65,57 @@ export const Products: CollectionConfig = {
     update: () => true, // Allow public update access
     delete: () => true, // Allow public delete access
   },
+  
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        // Set main image based on type
+        if (data.imageType === 'upload' && data.mainImage) {
+          data.image = data.mainImage
+        } else if (data.imageType === 'url' && data.imageUrl) {
+          data.image = data.imageUrl
+        }
+        return data
+      },
+    ],
+    afterRead: [
+      async ({ doc, req }) => {
+        // Convert main image based on type
+        if (doc.imageType === 'upload') {
+          if (doc.mainImage && typeof doc.mainImage === 'object' && doc.mainImage.filename) {
+            doc.image = `/media/${doc.mainImage.filename}`
+          } else if (doc.image && typeof doc.image === 'object' && doc.image.filename) {
+            doc.image = `/media/${doc.image.filename}`
+          }
+        } else if (doc.imageType === 'url' && doc.imageUrl) {
+          doc.image = doc.imageUrl
+        }
+        
+        // Convert additional images
+        if (doc.additionalImages && Array.isArray(doc.additionalImages)) {
+          doc.images = doc.additionalImages.map((item: any) => {
+            if (item.imageType === 'upload' && item.image && typeof item.image === 'object' && item.image.filename) {
+              return {
+                url: `/media/${item.image.filename}`,
+                imageType: 'upload'
+              }
+            } else if (item.imageType === 'url' && item.imageUrl) {
+              return {
+                url: item.imageUrl,
+                imageType: 'url'
+              }
+            }
+            return {
+              url: item.image || item.imageUrl,
+              imageType: item.imageType || 'upload'
+            }
+          })
+        }
+        
+        return doc
+      },
+    ],
+  },
   fields: [
     {
       name: 'name',
@@ -87,28 +138,130 @@ export const Products: CollectionConfig = {
       },
     },
     {
-      name: 'image',
-      type: 'text',
+      name: 'imageType',
+      type: 'radio',
       required: true,
+      defaultValue: 'upload',
+      options: [
+        {
+          label: 'Upload Image',
+          value: 'upload',
+        },
+        {
+          label: 'Image URL',
+          value: 'url',
+        },
+      ],
       admin: {
+        description: 'Choose how to add main product image',
+      },
+    },
+    {
+      name: 'mainImage',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        condition: (data) => data.imageType === 'upload',
+        description: 'Upload main product image',
+      },
+      validate: (value, { data }) => {
+        if (data.imageType === 'upload' && !value) {
+          return 'Main image is required'
+        }
+        return true
+      },
+    },
+    {
+      name: 'imageUrl',
+      type: 'text',
+      admin: {
+        condition: (data) => data.imageType === 'url',
         description: 'Main product image URL',
       },
+      validate: (value, { data }) => {
+        if (data.imageType === 'url' && !value) {
+          return 'Image URL is required'
+        }
+        return true
+      },
+    },
+    {
+      name: 'additionalImages',
+      type: 'array',
+      maxRows: 10,
+      admin: {
+        description: 'Additional product images (max 10)',
+      },
+      fields: [
+        {
+          name: 'imageType',
+          type: 'radio',
+          defaultValue: 'upload',
+          options: [
+            {
+              label: 'Upload Image',
+              value: 'upload',
+            },
+            {
+              label: 'Image URL',
+              value: 'url',
+            },
+          ],
+        },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (data, siblingData) => siblingData.imageType === 'upload',
+          },
+          validate: (value, { siblingData }) => {
+            if (siblingData.imageType === 'upload' && !value) {
+              return 'Image is required'
+            }
+            return true
+          },
+        },
+        {
+          name: 'imageUrl',
+          type: 'text',
+          admin: {
+            condition: (data, siblingData) => siblingData.imageType === 'url',
+            placeholder: 'https://example.com/image.jpg',
+          },
+          validate: (value, { siblingData }) => {
+            if (siblingData.imageType === 'url' && !value) {
+              return 'Image URL is required'
+            }
+            return true
+          },
+        },
+      ],
     },
     {
       name: 'images',
       type: 'array',
       admin: {
-        description: 'Additional product images',
+        hidden: true,
+        description: 'Auto-populated from individual image fields',
       },
       fields: [
         {
           name: 'url',
           type: 'text',
-          admin: {
-            description: 'Image URL',
-          },
+        },
+        {
+          name: 'imageType',
+          type: 'text',
         },
       ],
+    },
+    {
+      name: 'image',
+      type: 'text',
+      admin: {
+        hidden: true,
+      },
     },
     {
       name: 'rating',
