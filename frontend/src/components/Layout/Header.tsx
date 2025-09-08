@@ -16,7 +16,7 @@ import BestsellerMegaMenu from "@/data/bestseller_mega";
 import BrandsMegaMenu from "./BrandsMegaMenu";
 import AnnouncementBar from "./AnnouncementBar";
 
-import logoImage from "@/assets/logo.svg";
+import logoImage from "@/assets/O2logo.png";
 import { productApi, Product, searchApi, SearchSuggestion } from "@/services/api";
 
 // Custom SVG Icons - All in gray color
@@ -480,7 +480,7 @@ const Header: React.FC = () => {
                   <img
                     src={logoImage}
                     alt="O2 Nutrition Logo"
-                    className="h-auto w-[160px] object-contain pt-4 pb-4"
+                    className="h-auto w-[260px] object-contain pt-4 pb-4"
                   />
                 </Link>
 
@@ -899,8 +899,8 @@ const Header: React.FC = () => {
             >
               <img
                 src={logoImage}
-                alt="NutriVibe Shop Logo"
-                className="h-auto w-[140px] object-contain"
+                alt="O2 Nutrition Logo"
+                className="h-auto w-[200px] object-contain"
               />
             </Link>
 

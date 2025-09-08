@@ -362,6 +362,10 @@ export interface Product {
    */
   lovedByExperts?: boolean | null;
   /**
+   * Select the fitness goal this product helps achieve
+   */
+  shopByGoal?: ('MUSCLE_GAIN' | 'WEIGHT_LOSS' | 'ENERGY_PERFORMANCE' | 'HEALTH_WELLNESS') | null;
+  /**
    * Detailed product description
    */
   description?: string | null;
@@ -988,6 +992,7 @@ export interface ProductsSelect<T extends boolean = true> {
   trending?: T;
   bestSeller?: T;
   lovedByExperts?: T;
+  shopByGoal?: T;
   description?: T;
   certifications?:
     | T

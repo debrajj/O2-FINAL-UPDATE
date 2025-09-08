@@ -48,7 +48,15 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || 'mongodb://localhost:27017/o2_nutrition',
   }),
-  cors: ['http://localhost:8081', '*'],
+  cors: [
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    process.env.ADMIN_URL || 'http://localhost:3001',
+    'https://*.vercel.app',
+    'https://*.netlify.app',
+    'https://*.railway.app',
+    'https://*.render.com',
+    ...(process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:8080'])
+  ],
   sharp,
   plugins: [
     payloadCloudPlugin(),

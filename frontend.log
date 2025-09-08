@@ -2,16 +2,14 @@
 > vite_react_shadcn_ts@0.0.0 dev
 > vite
 
+Port 8080 is in use, trying another one...
 
-  VITE v5.4.10  ready in 303 ms
+  VITE v5.4.10  ready in 477 ms
+
+  ➜  Local:   http://localhost:8081/
+12:48:37 PM [vite] .env changed, restarting server...
+12:48:37 PM [vite] server restarted.
 
   ➜  Local:   http://localhost:8080/
-  ➜  Network: http://192.168.19.36:8080/
-11:39:58 AM [vite] hmr update /src/pages/Index.tsx, /src/index.css
-11:42:24 AM [vite] hmr update /src/pages/Cart.tsx, /src/index.css
-11:42:50 AM [vite] hmr update /src/pages/Cart.tsx, /src/index.css
-11:43:58 AM [vite] hmr update /src/pages/Cart.tsx, /src/index.css
-11:44:41 AM [vite] hmr update /src/components/BuyItWith.tsx, /src/index.css
-11:45:23 AM [vite] hmr update /src/components/BuyItWith.tsx, /src/index.css
-11:46:22 AM [vite] hmr update /src/components/CartSidebarUpsells.tsx, /src/index.css
-11:46:54 AM [vite] hmr update /src/pages/Cart.tsx, /src/index.css
+  ➜  Network: http://192.168.19.38:8080/
+  ➜  Network: http://169.254.7.21:8080/

@@ -45,6 +45,14 @@ const subcategories = [
   { label: 'Hair Care', value: 'Hair Care' },
 ]
 
+// Shop by Goal categories
+const shopByGoals = [
+  { label: 'Muscle Gain', value: 'MUSCLE_GAIN' },
+  { label: 'Weight Loss', value: 'WEIGHT_LOSS' },
+  { label: 'Energy & Performance', value: 'ENERGY_PERFORMANCE' },
+  { label: 'Health & Wellness', value: 'HEALTH_WELLNESS' },
+]
+
 export const Products: CollectionConfig = {
   slug: 'products',
   admin: {
@@ -231,6 +239,14 @@ export const Products: CollectionConfig = {
       defaultValue: false,
       admin: {
         description: 'Mark as loved by experts product',
+      },
+    },
+    {
+      name: 'shopByGoal',
+      type: 'select',
+      options: shopByGoals,
+      admin: {
+        description: 'Select the fitness goal this product helps achieve',
       },
     },
     {

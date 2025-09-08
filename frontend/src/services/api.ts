@@ -1,5 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
-const PAYLOAD_API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api');
+const PAYLOAD_API_BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api');
 
 export interface Product {
   id: string;
@@ -24,6 +24,7 @@ export interface Product {
   trending?: boolean;
   bestSeller?: boolean;
   lovedByExperts?: boolean;
+  shopByGoal?: string;
   description?: string;
   certifications?: { name: string }[];
   nutritionInfo?: {
@@ -86,6 +87,7 @@ export interface ProductFilters {
   bestSeller?: boolean;
   lovedByExperts?: boolean;
   onSale?: boolean;
+  shopByGoal?: string;
   minPrice?: number;
   maxPrice?: number;
 }
@@ -139,6 +141,8 @@ export const productApi = {
           params.append('where[lovedByExperts][equals]', value.toString());
         } else if (key === 'onSale') {
           params.append('where[onSale][equals]', value.toString());
+        } else if (key === 'shopByGoal') {
+          params.append('where[shopByGoal][equals]', value.toString());
         } else if (key === 'minPrice') {
           params.append('where[price][greater_than_equal]', value.toString());
         } else if (key === 'maxPrice') {
@@ -302,6 +306,13 @@ export const productApi = {
     limit?: number
   ): Promise<ProductsResponse> {
     return this.getProducts({ brand, limit });
+  },
+
+  async getProductsByGoal(
+    goal: string,
+    limit?: number
+  ): Promise<ProductsResponse> {
+    return this.getProducts({ shopByGoal: goal, limit });
   },
 
   async getAllProducts(): Promise<ProductsResponse> {
